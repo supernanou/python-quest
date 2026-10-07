@@ -11,3 +11,7 @@
 
 # macOS
 .DS_Store
+
+# Temporary test scripts
+/_*.gd
+/_*.gd.uid
