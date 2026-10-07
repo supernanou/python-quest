@@ -12,7 +12,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 - **A quiz at the end of every level:** 5 questions, mixing click-an-answer and typed answers. Kids need 4 out of 5 to pass, and missed answers are explained before they try again.
 - **Code Lab:** kids write whole programs, press **Run** and see the output, with `input()` and friendly error messages. It includes 10 challenges that the game checks automatically.
 - **Python Notebook:** every lesson a child solves is saved as a note card they can look back at.
-- **Hero creator:** boy or girl, skin, hair and outfit colours, a name, and extras such as a cap, sunglasses, headphones, a crown or a wizard hat.
+- **Hero creator:** a name, skin colour, **10 hairstyles** (short, long, ponytail, pigtails, bun, curly, braids, spiky, bob, buzz cut) and **10 outfits** (T-shirt, dress, hoodie, dungarees, sports top, skirt, jacket, stripes, superhero, lab coat) in any colour. Anyone can pick any style. Extras such as a cap, sunglasses, headphones, a crown or a wizard hat are unlocked with icons.
 - **Every child can make a hero like them:** the free **About me** tab offers a wheelchair, crutches, leg braces, a prosthetic leg or arm, glasses, an eye patch, hearing aids, a cochlear implant, ear defenders, an insulin pump and a service dog.
 - **`</>` code icons** to collect on the maps, spent on hints and hero extras.
 - **Several players** on one computer, each with their own hero and progress.
@@ -33,7 +33,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 | ![Code Lab](docs/screenshots/08-code-lab.png) | ![Notebook](docs/screenshots/09-notebook.png) |
 | **Code Lab:** write and run real programs | **Notebook:** everything learned so far |
 | ![Create your hero](docs/screenshots/03-hero.png) | ![About me](docs/screenshots/12-about-me.png) |
-| **Create your hero** | **About me:** a hero just like you |
+| **Create your hero:** 10 hairstyles, 10 outfits | **About me:** a hero just like you |
 | ![Greek](docs/screenshots/11-greek.png) | |
 | **Ελληνικά:** the whole game in Greek | |
 | ![Players](docs/screenshots/02-players.png) | ![Report](docs/screenshots/10-report.png) |

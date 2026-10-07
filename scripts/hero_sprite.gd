@@ -11,7 +11,35 @@ const DEFAULT_LOOK := {
 	"outfit": "#3776ab",
 	"item": "none",
 	"aids": [],
+	"hair_style": "",  # empty = "long" for girls, "short" for boys (heroes made before styles existed)
+	"clothes": "",  # empty = "dress" for girls, "tshirt" for boys
 }
+
+## 10 hairstyles and 10 outfits - anyone can pick any of them.
+const HAIR_STYLES := [
+	{"id": "short", "name": "Short"},
+	{"id": "long", "name": "Long"},
+	{"id": "ponytail", "name": "Ponytail"},
+	{"id": "pigtails", "name": "Pigtails"},
+	{"id": "bun", "name": "Bun"},
+	{"id": "curly", "name": "Curly"},
+	{"id": "braids", "name": "Braids"},
+	{"id": "spiky", "name": "Spiky"},
+	{"id": "bob", "name": "Bob"},
+	{"id": "buzz", "name": "Buzz cut"},
+]
+const CLOTHES := [
+	{"id": "tshirt", "name": "T-shirt"},
+	{"id": "dress", "name": "Dress"},
+	{"id": "hoodie", "name": "Hoodie"},
+	{"id": "dungarees", "name": "Dungarees"},
+	{"id": "jersey", "name": "Sports top"},
+	{"id": "skirt", "name": "Skirt"},
+	{"id": "jacket", "name": "Jacket"},
+	{"id": "stripes", "name": "Stripes"},
+	{"id": "superhero", "name": "Superhero"},
+	{"id": "labcoat", "name": "Lab coat"},
+]
 
 ## Fun extras. They are bought with </> code icons.
 const ITEMS := [
@@ -57,11 +85,27 @@ func has_aid(id: String) -> bool:
 	return id in look.get("aids", [])
 
 
+func hair_style() -> String:
+	var chosen: String = look.get("hair_style", "")
+	if chosen != "":
+		return chosen
+	return "long" if look.get("style", "boy") == "girl" else "short"
+
+
+func clothes() -> String:
+	var chosen: String = look.get("clothes", "")
+	if chosen != "":
+		return chosen
+	return "dress" if look.get("style", "boy") == "girl" else "tshirt"
+
+
 func _draw() -> void:
 	var skin := Color(look.get("skin", DEFAULT_LOOK["skin"]))
 	var hair := Color(look.get("hair", DEFAULT_LOOK["hair"]))
 	var outfit := Color(look.get("outfit", DEFAULT_LOOK["outfit"]))
-	var is_girl: bool = look.get("style", "boy") == "girl"
+	var hairdo := hair_style()
+	var outfit_style := clothes()
+	var info := _clothes_info(outfit_style, outfit, skin)
 	var facing_away := facing.y < -0.5
 	var item: String = look.get("item", "none")
 	var in_chair := has_aid("wheelchair")
@@ -70,7 +114,7 @@ func _draw() -> void:
 	var bob := 0.0 if in_chair else -absf(sin(walk_time)) * 3.0
 	var step := 0.0 if in_chair else sin(walk_time) * 4.0
 	var head := Vector2(0, -12 + bob)
-	var body_edge := 9.5 if is_girl else 11.0
+	var body_edge: float = info["edge"]
 
 	if has_aid("service_dog"):
 		_draw_dog(in_chair)
@@ -84,23 +128,15 @@ func _draw() -> void:
 		draw_rect(Rect2(-12, -9, 24, 14), Color("#475569"))  # back rest
 		draw_rect(Rect2(-12, -9, 24, 14), Color("#334155"), false, 1.5)
 
-	# Long hair goes behind the body
-	if is_girl:
-		draw_circle(head + Vector2(0, 1), 12.5, hair)
-		draw_rect(Rect2(head.x - 12.5, head.y, 25, 15), hair)
+	if outfit_style == "superhero" and not facing_away:
+		_draw_cape(outfit, bob)
 
-	_draw_legs(skin, outfit, is_girl, bob, step, in_chair)
+	_draw_hair_back(hairdo, head, hair, facing_away)
 
-	# Body
-	if is_girl:
-		draw_colored_polygon(PackedVector2Array([
-			Vector2(-9, -4 + bob), Vector2(9, -4 + bob),
-			Vector2(13, 12 + bob), Vector2(-13, 12 + bob),
-		]), outfit)
-		draw_rect(Rect2(-10, 2 + bob, 20, 3), Color("#ffd43b"))
-	else:
-		draw_rect(Rect2(-11, -4 + bob, 22, 14), outfit)
-		draw_rect(Rect2(-11, 3 + bob, 22, 3), Color("#ffd43b"))
+	_draw_legs(skin, info["legs"], info["shorts"], bob, step, in_chair)
+	_draw_clothes(outfit_style, outfit, bob)
+	if outfit_style == "superhero" and facing_away:
+		_draw_cape(outfit, bob)
 
 	if has_aid("insulin_pump"):
 		var pump := Vector2(4, 4 + bob)
@@ -111,19 +147,13 @@ func _draw() -> void:
 	if in_chair:
 		_draw_wheelchair()
 
-	_draw_arms(skin, outfit, body_edge, bob, step, in_chair)
+	_draw_arms(skin, info["sleeve"], body_edge, bob, step, in_chair)
 
 	# Head and hair
 	draw_circle(head, 11, skin)
-	if facing_away:
-		draw_circle(head, 11, hair)
-	else:
-		draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
-		if not is_girl:
-			draw_circle(head + Vector2(-5, -8), 4, hair)
-			draw_circle(head + Vector2(1, -9), 4, hair)
+	_draw_hair_front(hairdo, head, hair, facing_away)
 
-	if is_girl and not item in ["cap", "crown", "wizard", "headphones"] and not has_aid("ear_defenders"):
+	if hairdo == "long" and not item in ["cap", "crown", "wizard", "headphones"] and not has_aid("ear_defenders"):
 		var bow := head + Vector2(8, -9)
 		var bow_color := Color("#f472b6")
 		draw_colored_polygon(PackedVector2Array([bow, bow + Vector2(-6, -4), bow + Vector2(-6, 4)]), bow_color)
@@ -145,8 +175,7 @@ func _draw() -> void:
 		_draw_item(item, head, facing_away)
 
 
-func _draw_legs(skin: Color, outfit: Color, is_girl: bool, bob: float, step: float, in_chair: bool) -> void:
-	var leg_color := skin if is_girl else outfit.darkened(0.45)
+func _draw_legs(skin: Color, leg_color: Color, shorts, bob: float, step: float, in_chair: bool) -> void:
 	var top := 10.0 + bob
 	for side in [-1, 1]:
 		var x: float = -9.0 if side == -1 else 2.0
@@ -171,20 +200,22 @@ func _draw_legs(skin: Color, outfit: Color, is_girl: bool, bob: float, step: flo
 			]), DARK_METAL, 2.8)
 			continue
 		draw_rect(Rect2(x, top - swing, 7, 5), leg_color)
+		if shorts != null:
+			draw_rect(Rect2(x, top - swing, 7, 2), shorts)
 		draw_rect(Rect2(x, 14 - swing, 7, 4.5), SHOE)
 		if has_aid("leg_braces"):
 			draw_rect(Rect2(x - 0.5, top + 0.5 - swing, 8, 7.5), Color(0.65, 0.95, 0.99, 0.85))
 			draw_line(Vector2(x - 0.5, top + 2.5 - swing), Vector2(x + 7.5, top + 2.5 - swing), Color("#0e7490"), 1.2)
 
 
-func _draw_arms(skin: Color, outfit: Color, edge: float, bob: float, step: float, in_chair: bool) -> void:
+func _draw_arms(skin: Color, sleeve: Color, edge: float, bob: float, step: float, in_chair: bool) -> void:
 	for side in [-1, 1]:
 		var x: float = -edge - 3.5 if side == -1 else edge
 		var swing: float = 0.0 if in_chair else step * 0.35 * side
 		var top := -3.0 + bob
 		if in_chair:
 			top += 2.0  # hands down on the wheels
-		draw_rect(Rect2(x, top, 3.5, 5), outfit.darkened(0.1))  # sleeve
+		draw_rect(Rect2(x, top, 3.5, 5), sleeve)
 		var prosthetic: bool = side == 1 and has_aid("prosthetic_arm")
 		var hand := Vector2(x + 1.75, top + 11 + swing)
 		if prosthetic:
@@ -204,6 +235,193 @@ func _draw_arms(skin: Color, outfit: Color, edge: float, bob: float, step: float
 			draw_arc(cuff, 2.6, PI, TAU, 8, Color("#64748b"), 1.4)
 			draw_line(hand, hand + Vector2(side * 2.5, 0), Color("#64748b"), 1.6)
 			draw_circle(foot, 1.2, DARK_METAL)
+
+
+## How each outfit changes the body: how wide it is, sleeve and leg colours.
+func _clothes_info(style: String, c: Color, skin: Color) -> Dictionary:
+	var info := {"edge": 11.0, "sleeve": c.darkened(0.1), "legs": Color("#334155"), "shorts": null}
+	match style:
+		"tshirt":
+			info["legs"] = c.darkened(0.45)
+		"dress":
+			info["edge"] = 9.5
+			info["sleeve"] = c
+			info["legs"] = skin
+		"hoodie":
+			info["sleeve"] = c
+			info["legs"] = Color("#374151")
+		"dungarees":
+			info["sleeve"] = Color("#f8fafc")
+			info["legs"] = c
+		"jersey":
+			info["sleeve"] = Color("#f8fafc")
+			info["legs"] = skin
+			info["shorts"] = c.darkened(0.25)
+		"skirt":
+			info["edge"] = 10.0
+			info["sleeve"] = c.lightened(0.55)
+			info["legs"] = skin
+		"jacket":
+			info["sleeve"] = c
+			info["legs"] = Color("#1e3a8a")
+		"superhero":
+			info["sleeve"] = c
+			info["legs"] = c.darkened(0.15)
+		"labcoat":
+			info["edge"] = 12.0
+			info["sleeve"] = Color("#f8fafc")
+	return info
+
+
+func _draw_clothes(style: String, c: Color, bob: float) -> void:
+	var y := -4.0 + bob
+	var yellow := Color("#ffd43b")
+	match style:
+		"dress":
+			draw_colored_polygon(PackedVector2Array([
+				Vector2(-9, y), Vector2(9, y), Vector2(13, 12 + bob), Vector2(-13, 12 + bob),
+			]), c)
+			draw_rect(Rect2(-10, 2 + bob, 20, 3), yellow)
+		"hoodie":
+			draw_rect(Rect2(-11.5, y, 23, 14), c)
+			draw_rect(Rect2(-8, y - 1, 16, 3), c.darkened(0.25))  # hood around the neck
+			draw_line(Vector2(-2, y + 1), Vector2(-2.5, y + 6), Color.WHITE, 1.0)
+			draw_line(Vector2(2, y + 1), Vector2(2.5, y + 6), Color.WHITE, 1.0)
+			draw_rect(Rect2(-6, y + 8, 12, 4), c.darkened(0.18))  # pocket
+		"dungarees":
+			draw_rect(Rect2(-11, y, 22, 14), Color("#f8fafc"))
+			draw_rect(Rect2(-7, y + 3, 14, 11), c)
+			draw_line(Vector2(-6, y + 3), Vector2(-8, y), c, 2.0)
+			draw_line(Vector2(6, y + 3), Vector2(8, y), c, 2.0)
+			draw_circle(Vector2(-4.5, y + 4.5), 1.0, yellow)
+			draw_circle(Vector2(4.5, y + 4.5), 1.0, yellow)
+			draw_rect(Rect2(-3, y + 7, 6, 3), c.darkened(0.2))  # front pocket
+		"jersey":
+			draw_rect(Rect2(-11, y, 22, 14), c)
+			draw_polyline(PackedVector2Array([Vector2(-4, y), Vector2(0, y + 4), Vector2(4, y)]), Color.WHITE, 1.4)
+			draw_string(ThemeDB.fallback_font, Vector2(-6, y + 12.5), "10", HORIZONTAL_ALIGNMENT_CENTER, 12, 8, Color.WHITE)
+		"skirt":
+			draw_rect(Rect2(-10, y, 20, 9), c.lightened(0.55))
+			draw_colored_polygon(PackedVector2Array([
+				Vector2(-10, 4 + bob), Vector2(10, 4 + bob), Vector2(13, 12 + bob), Vector2(-13, 12 + bob),
+			]), c)
+			for px in [-6.0, -2.0, 2.0, 6.0]:
+				draw_line(Vector2(px, 5 + bob), Vector2(px * 1.25, 12 + bob), c.darkened(0.2), 0.8)
+		"jacket":
+			draw_rect(Rect2(-11, y, 22, 14), Color("#f1f5f9"))
+			draw_rect(Rect2(-11, y, 8, 14), c)
+			draw_rect(Rect2(3, y, 8, 14), c)
+			draw_colored_polygon(PackedVector2Array([Vector2(-3, y), Vector2(-6, y), Vector2(-3, y + 4)]), c.darkened(0.25))
+			draw_colored_polygon(PackedVector2Array([Vector2(3, y), Vector2(6, y), Vector2(3, y + 4)]), c.darkened(0.25))
+			draw_line(Vector2(-3, y + 1), Vector2(-3, y + 14), c.darkened(0.3), 0.8)
+			draw_line(Vector2(3, y + 1), Vector2(3, y + 14), c.darkened(0.3), 0.8)
+		"stripes":
+			draw_rect(Rect2(-11, y, 22, 14), c)
+			for sy in [2.0, 6.0, 10.0]:
+				draw_rect(Rect2(-11, y + sy, 22, 2), Color(1, 1, 1, 0.75))
+		"superhero":
+			draw_rect(Rect2(-11, y, 22, 14), c)
+			draw_circle(Vector2(0, y + 4.5), 3.6, yellow)
+			draw_string(ThemeDB.fallback_font, Vector2(-3.5, y + 7.3), "P", HORIZONTAL_ALIGNMENT_CENTER, 7, 7, Color("#1e293b"))
+			draw_rect(Rect2(-11, y + 10, 22, 2), yellow)  # belt
+		"labcoat":
+			draw_rect(Rect2(-12, y, 24, 16), Color("#f8fafc"))
+			draw_colored_polygon(PackedVector2Array([Vector2(-4, y), Vector2(4, y), Vector2(0, y + 6)]), c)
+			draw_line(Vector2(-4, y), Vector2(-1, y + 9), Color("#cbd5e1"), 1.0)  # lapels
+			draw_line(Vector2(4, y), Vector2(1, y + 9), Color("#cbd5e1"), 1.0)
+			draw_rect(Rect2(4.5, y + 7, 5, 4), Color("#e2e8f0"))  # pocket with pens
+			draw_line(Vector2(5.8, y + 5.5), Vector2(5.8, y + 7.5), Color("#2563eb"), 1.0)
+			draw_line(Vector2(7.6, y + 5.5), Vector2(7.6, y + 7.5), Color("#ef4444"), 1.0)
+		_:  # "tshirt" (the original Python blue & yellow look)
+			draw_rect(Rect2(-11, y, 22, 14), c)
+			draw_rect(Rect2(-11, 3 + bob, 22, 3), yellow)
+
+
+func _draw_cape(c: Color, bob: float) -> void:
+	var cape := Color("#dc2626") if c.r < 0.75 or c.g > 0.4 else Color("#2563eb")
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-10, -4 + bob), Vector2(10, -4 + bob), Vector2(14, 15), Vector2(4, 13), Vector2(-4, 13), Vector2(-14, 15),
+	]), cape)
+
+
+## Hair that sits behind the head (and body): long hair, braids, curly hair...
+func _draw_hair_back(style: String, head: Vector2, hair: Color, facing_away: bool) -> void:
+	match style:
+		"long":
+			draw_circle(head + Vector2(0, 1), 12.5, hair)
+			draw_rect(Rect2(head.x - 12.5, head.y, 25, 15), hair)
+		"bob":
+			draw_circle(head + Vector2(0, 1), 12.5, hair)
+			draw_rect(Rect2(head.x - 12.5, head.y, 25, 8), hair)
+		"curly":
+			draw_circle(head + Vector2(0, -1.5), 15.0, hair)
+			for i in 10:
+				var a := i * TAU / 10.0
+				draw_circle(head + Vector2(0, -1.5) + Vector2(cos(a), sin(a)) * 14.0, 3.6, hair)
+		"ponytail":
+			if facing_away:
+				draw_circle(head + Vector2(0, 11), 4.0, hair)
+				draw_circle(head + Vector2(0, 16), 3.0, hair)
+			else:
+				draw_circle(head + Vector2(12.5, 0), 4.2, hair)
+				draw_circle(head + Vector2(13.5, 6), 3.2, hair)
+				draw_circle(head + Vector2(9.5, -5), 2.0, Color("#f472b6"))  # hair tie
+
+
+## Hair on top of the head, in front.
+func _draw_hair_front(style: String, head: Vector2, hair: Color, facing_away: bool) -> void:
+	if facing_away and style != "buzz":
+		draw_circle(head, 11, hair)
+	match style:
+		"short":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
+				draw_circle(head + Vector2(-5, -8), 4, hair)
+				draw_circle(head + Vector2(1, -9), 4, hair)
+		"long", "ponytail":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
+		"pigtails":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
+			for side in [-1, 1]:
+				draw_circle(head + Vector2(13.5 * side, 2), 4.6, hair)
+				draw_circle(head + Vector2(10.3 * side, -1.5), 1.8, Color("#facc15"))  # hair ties
+		"bun":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
+			draw_circle(head + Vector2(0, -13), 5.0, hair)
+			draw_rect(Rect2(head + Vector2(-3.5, -9.5), Vector2(7, 1.6)), Color("#38bdf8"))
+		"curly":
+			if not facing_away:
+				for i in 7:
+					var a := PI + 0.25 + i * (PI - 0.5) / 6.0
+					draw_circle(head + Vector2(cos(a), sin(a)) * 9.5, 3.3, hair)
+		"braids":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
+			for side in [-1, 1]:
+				for i in 4:
+					draw_circle(head + Vector2(10.5 * side, 3.0 + i * 4.0), 2.7, hair)
+				draw_circle(head + Vector2(10.5 * side, 18.5), 1.5, Color("#f472b6"))
+		"spiky":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 4.5)
+			for i in 5:
+				var a := PI + 0.45 + i * (PI - 0.9) / 4.0
+				var root := head + Vector2(cos(a), sin(a)) * 9.5
+				var tip := head + Vector2(cos(a), sin(a)) * 16.0
+				var side_dir := Vector2(-sin(a), cos(a)) * 3.0
+				draw_colored_polygon(PackedVector2Array([root - side_dir, tip, root + side_dir]), hair)
+		"bob":
+			if not facing_away:
+				draw_arc(head, 11, PI, TAU, 16, hair, 6.0)
+				draw_rect(Rect2(head + Vector2(-9, -10), Vector2(18, 5)), hair)  # fringe
+		"buzz":
+			if facing_away:
+				draw_circle(head, 11, hair.lightened(0.15))
+			else:
+				draw_arc(head, 10.5, PI, TAU, 16, hair.lightened(0.15), 3.0)
 
 
 func _draw_wheelchair() -> void:

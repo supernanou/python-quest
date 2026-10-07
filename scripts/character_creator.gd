@@ -1,6 +1,8 @@
 extends Control
 ## "Create your hero" screen. Two tabs:
-##   Look     - boy or girl, colours, and extras unlocked with </> code icons
+##   Look     - boy or girl, skin, and extras unlocked with </> code icons
+##   Hair     - 10 hairstyles and hair colours
+##   Clothes  - 10 outfits and colours (anyone can pick anything)
 ##   About me - wheelchair, hearing aids, glasses... so every child can make a hero
 ##              just like them. These are always free.
 
@@ -27,9 +29,14 @@ var swatches := {}  # "skin" -> [[button, "#hex"], ...]
 var item_buttons := {}  # "crown" -> button
 var aid_buttons := {}  # "wheelchair" -> button
 var look_page: VBoxContainer
+var hair_page: VBoxContainer
+var clothes_page: VBoxContainer
 var me_page: VBoxContainer
 var look_tab: Button
+var hair_tab: Button
+var clothes_tab: Button
 var me_tab: Button
+var style_buttons := {}  # "hair_style" / "clothes" -> {id: [button, mini hero]}
 
 
 func _ready() -> void:
@@ -92,12 +99,14 @@ func _ready() -> void:
 	tabs.add_theme_constant_override("separation", 8)
 	v.add_child(tabs)
 	var tab_group := ButtonGroup.new()
-	look_tab = _choice_button("Look", tab_group, func() -> void: _show_tab(false))
-	me_tab = _choice_button("About me", tab_group, func() -> void: _show_tab(true))
-	for tab in [look_tab, me_tab]:
+	look_tab = _choice_button("Look", tab_group, func() -> void: _show_tab("look"))
+	hair_tab = _choice_button("Hair", tab_group, func() -> void: _show_tab("hair"))
+	clothes_tab = _choice_button("Clothes", tab_group, func() -> void: _show_tab("clothes"))
+	me_tab = _choice_button("About me", tab_group, func() -> void: _show_tab("me"))
+	for tab in [look_tab, hair_tab, clothes_tab, me_tab]:
 		tab.custom_minimum_size = Vector2(0, 40)
 		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		tab.add_theme_font_size_override("font_size", 19)
+		tab.add_theme_font_size_override("font_size", 17)
 		tabs.add_child(tab)
 
 	look_page = VBoxContainer.new()
@@ -113,8 +122,16 @@ func _ready() -> void:
 	style_row.add_child(girl_button)
 
 	_swatch_row(look_page, "Skin", "skin", SKINS)
-	_swatch_row(look_page, "Hair", "hair", HAIRS)
-	_swatch_row(look_page, "Outfit", "outfit", OUTFITS)
+
+	# Hair: 10 styles + colour
+	hair_page = _page(v)
+	hair_page.add_child(_style_grid("hair_style", HeroSprite.HAIR_STYLES))
+	_swatch_row(hair_page, "Colour", "hair", HAIRS)
+
+	# Clothes: 10 outfits + colour
+	clothes_page = _page(v)
+	clothes_page.add_child(_style_grid("clothes", HeroSprite.CLOTHES))
+	_swatch_row(clothes_page, "Colour", "outfit", OUTFITS)
 
 	# "About me": free, pick as many as you like
 	me_page = VBoxContainer.new()
@@ -181,8 +198,11 @@ func open(p_save) -> void:
 	save = p_save
 	look = HeroSprite.DEFAULT_LOOK.duplicate(true)
 	look.merge(save.look.duplicate(true), true)
-	look_tab.button_pressed = true
-	_show_tab(false)
+	if look["hair_style"] == "":
+		look["hair_style"] = "long" if look["style"] == "girl" else "short"
+	if look["clothes"] == "":
+		look["clothes"] = "dress" if look["style"] == "girl" else "tshirt"
+	_show_tab("look")
 	name_edit.text = look["name"]
 	message_label.text = ""
 	_refresh()
@@ -220,11 +240,46 @@ func _on_name_changed(text: String) -> void:
 	_refresh()
 
 
-func _show_tab(about_me: bool) -> void:
-	look_page.visible = not about_me
-	me_page.visible = about_me
-	look_tab.set_pressed_no_signal(not about_me)
-	me_tab.set_pressed_no_signal(about_me)
+func _show_tab(page: String) -> void:
+	var pages := {"look": [look_page, look_tab], "hair": [hair_page, hair_tab], "clothes": [clothes_page, clothes_tab], "me": [me_page, me_tab]}
+	for key in pages:
+		pages[key][0].visible = key == page
+		pages[key][1].set_pressed_no_signal(key == page)
+
+
+func _page(parent: Container) -> VBoxContainer:
+	var page := VBoxContainer.new()
+	page.add_theme_constant_override("separation", 10)
+	page.custom_minimum_size = Vector2(0, 278)
+	page.visible = false
+	parent.add_child(page)
+	return page
+
+
+## A grid of 10 buttons, each showing a little hero with that hairstyle or outfit.
+func _style_grid(key: String, styles: Array) -> GridContainer:
+	var grid := GridContainer.new()
+	grid.columns = 5
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
+	style_buttons[key] = {}
+	for style in styles:
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(96, 86)
+		button.clip_contents = true
+		button.tooltip_text = style["name"]
+		button.pressed.connect(_set_value.bind(key, style["id"]))
+		var mini := HeroSprite.new()
+		if key == "hair_style":
+			mini.scale = Vector2(2.7, 2.7)  # close-up of the head
+			mini.position = Vector2(48, 44 + 12 * 2.7)
+		else:
+			mini.scale = Vector2(1.8, 1.8)  # the whole outfit
+			mini.position = Vector2(48, 47)
+		button.add_child(mini)
+		grid.add_child(button)
+		style_buttons[key][style["id"]] = [button, mini]
+	return grid
 
 
 func _on_aid_toggled(on: bool, id: String) -> void:
@@ -240,6 +295,10 @@ func _on_aid_toggled(on: bool, id: String) -> void:
 
 func _set_value(key: String, value: String) -> void:
 	look[key] = value
+	# Boy / Girl just picks a starting hairstyle and outfit - change them freely
+	if key == "style":
+		look["hair_style"] = "long" if value == "girl" else "short"
+		look["clothes"] = "dress" if value == "girl" else "tshirt"
 	_refresh()
 
 
@@ -264,6 +323,8 @@ func _randomize() -> void:
 	look["skin"] = SKINS.pick_random()
 	look["hair"] = HAIRS.pick_random()
 	look["outfit"] = OUTFITS.pick_random()
+	look["hair_style"] = HeroSprite.HAIR_STYLES.pick_random()["id"]
+	look["clothes"] = HeroSprite.CLOTHES.pick_random()["id"]
 	_refresh()
 
 
@@ -274,6 +335,21 @@ func _refresh() -> void:
 	var with_dog: bool = "service_dog" in look["aids"]
 	preview.scale = Vector2.ONE * (4.5 if with_dog else 6.0)
 	preview.position = Vector2(165 if with_dog else 210, 330)
+	# Little heroes on the hairstyle and outfit buttons show the current colours
+	for key in style_buttons:
+		for id in style_buttons[key]:
+			var entry: Array = style_buttons[key][id]
+			var mini_look: Dictionary = look.duplicate(true)
+			mini_look[key] = id
+			mini_look["aids"] = look["aids"].filter(func(a): return not a in ["wheelchair", "service_dog", "crutches"])
+			if key == "hair_style":
+				mini_look["item"] = "none"
+			entry[1].look = mini_look
+			entry[1].queue_redraw()
+			var selected: bool = look[key] == id
+			var style := _box(Color("#7ec850") if selected else Color("#1e3a5f"), Color.WHITE if selected else Color("#334155"), 3 if selected else 2, 10)
+			for state in ["normal", "hover", "pressed", "focus"]:
+				entry[0].add_theme_stylebox_override(state, style)
 	for id in aid_buttons:
 		var on: bool = id in look["aids"]
 		var button: Button = aid_buttons[id]
