@@ -9,6 +9,7 @@ signal closed
 
 const PythonText = preload("res://scripts/python_text.gd")
 const Lang = preload("res://scripts/lang.gd")
+const Speech = preload("res://scripts/speech.gd")
 const HINT_PRICE := 1
 const ENCOURAGEMENT := [
 	"Not quite - try again!",
@@ -40,6 +41,7 @@ var answer_edit: LineEdit
 var feedback_label: Label
 var hint_button: Button
 var run_button: Button
+var read_button: Button
 
 
 func _ready() -> void:
@@ -119,6 +121,11 @@ func _ready() -> void:
 	buttons.alignment = BoxContainer.ALIGNMENT_END
 	buttons.add_theme_constant_override("separation", 10)
 	v.add_child(buttons)
+	read_button = _button("Read aloud", _read_aloud)
+	buttons.add_child(read_button)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	buttons.add_child(spacer)
 	buttons.add_child(_button("Notes", func() -> void: notebook_requested.emit()))
 	hint_button = _button("Hint", _on_hint)
 	buttons.add_child(hint_button)
@@ -143,6 +150,7 @@ func close() -> void:
 	if not visible:
 		return
 	visible = false
+	Speech.stop()
 	closed.emit()
 
 
@@ -169,6 +177,8 @@ func _show_exercise(i: int) -> void:
 	_feedback("", Color.WHITE)
 	run_button.text = "Run  >"
 	_update_hint_button()
+	Speech.stop()
+	read_button.visible = Speech.available()
 	answer_edit.call_deferred("grab_focus")
 
 
@@ -230,6 +240,13 @@ func _on_hint() -> void:
 	_update_hint_button()
 	_note_hint_used()
 	_feedback(tr("Hint:") + " " + str(Lang.pick(puzzle, "hint")), Color("#93c5fd"))
+	answer_edit.grab_focus()
+
+
+## Reads the title, lesson, question and any feedback (not the code).
+func _read_aloud() -> void:
+	var parts := [title_label.text, lesson_label.text, question_label.text, feedback_label.text]
+	Speech.say(". ".join(PackedStringArray(parts.filter(func(p): return p != ""))))
 	answer_edit.grab_focus()
 
 

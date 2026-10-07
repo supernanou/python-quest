@@ -20,6 +20,23 @@ const TEXT := {
 	"Full screen": "Πλήρης οθόνη",
 	"Close a window": "Κλείσε ένα παράθυρο",
 	"Got it!": "Κατάλαβα!",
+	"Read aloud": "Διάβασέ το",
+	"Press Run (or Cmd/Ctrl + Enter) to start your program.": "Πάτα Εκτέλεση (ή Cmd/Ctrl + Enter) για να τρέξει το πρόγραμμά σου.",
+
+	# ---- Break reminder
+	"Time for a break!": "Ώρα για διάλειμμα!",
+	"You've been coding for %d minutes - great work! Give your eyes and your body a little rest.": "Γράφεις κώδικα εδώ και %d λεπτά - μπράβο! Δώσε λίγη ξεκούραση στα μάτια και στο σώμα σου.",
+	"Take a 5-minute break": "Διάλειμμα 5 λεπτών",
+	"Keep playing for now": "Συνεχίζω για λίγο ακόμα",
+	"Break time!": "Διάλειμμα!",
+	"I'm back!": "Γύρισα!",
+	"Welcome back!": "Καλώς ήρθες πίσω!",
+	"Stand up and stretch your arms up high!": "Σήκω και τέντωσε τα χέρια σου ψηλά!",
+	"Look out of the window at something far away.": "Κοίτα έξω από το παράθυρο κάτι μακριά.",
+	"Drink a glass of water.": "Πιες ένα ποτήρι νερό.",
+	"Roll your shoulders and wiggle your fingers.": "Κάνε κύκλους με τους ώμους και κούνησε τα δάχτυλα.",
+	"Walk around the room.": "Περπάτα λίγο στο δωμάτιο.",
+	"Do 10 jumping jacks!": "Κάνε 10 αλματάκια!",
 
 	# ---- Who's playing?
 	"Who's playing?": "Ποιος παίζει;",

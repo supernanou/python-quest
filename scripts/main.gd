@@ -29,6 +29,7 @@ const Notebook = preload("res://scripts/notebook.gd")
 const Report = preload("res://scripts/report.gd")
 const CodeLab = preload("res://scripts/code_lab.gd")
 const BackButton = preload("res://scripts/back_button.gd")
+const BreakReminder = preload("res://scripts/break_reminder.gd")
 const Lang = preload("res://scripts/lang.gd")
 
 var state := "title"  # "title", "players", "creator", "levels", "playing", "quiz" or "won"
@@ -59,6 +60,7 @@ var profile_select: Control
 var notebook: Control
 var report: Control
 var code_lab: Control
+var break_reminder: Control
 
 
 func _ready() -> void:
@@ -72,6 +74,12 @@ func _ready() -> void:
 	if not players.is_empty():
 		title_screen.set_look(players[-1].look)
 	title_screen.visible = true
+
+
+func _process(delta: float) -> void:
+	# Count play time for the break reminder (not on the title screen)
+	if state != "title" and save != null:
+		break_reminder.count_play_time(delta, save.look)
 
 
 func _setup_inputs() -> void:
@@ -579,6 +587,12 @@ func _build_ui() -> void:
 	notebook = Notebook.new()
 	notebook.closed.connect(_on_notebook_closed)
 	top_layer.add_child(notebook)
+
+	var break_layer := CanvasLayer.new()
+	break_layer.layer = 20
+	add_child(break_layer)
+	break_reminder = BreakReminder.new()
+	break_layer.add_child(break_reminder)
 
 	creator = CharacterCreator.new()
 	creator.confirmed.connect(_on_hero_created)

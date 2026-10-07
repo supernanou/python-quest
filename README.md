@@ -17,6 +17,8 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 - **Several players** on one computer, each with their own hero and progress.
 - **A progress report for parents and teachers** showing which topics needed extra help.
 - **English / Ελληνικά,** switchable at any time.
+- **Read aloud:** lessons, questions, quizzes and help can be read out loud in English or Greek, using the computer's built-in voices.
+- **Break reminder:** after 30 minutes the game suggests a 5-minute break with stretching tips.
 - **Everything is drawn in code,** so there are no image files.
 
 ## Screenshots
@@ -81,6 +83,9 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 The Python code itself stays in English in both languages, because Python is written in English everywhere. Everything around the code is translated.
 
 ## For parents and teachers
+
+- **Read aloud:** the **Read aloud** button reads the lesson and question for younger readers. It uses the computer's own voices; on a Mac these are *Samantha* for English and *Melina* for Greek. If a voice isn't installed, the button is hidden.
+- **Break reminder:** after **30 minutes** the game pauses and suggests a **5-minute break**. Kids can take the break, which shows a countdown with tips such as stretching or drinking water, or keep playing and get reminded again in 15 minutes. To change the times, edit the three numbers at the top of [`scripts/break_reminder.gd`](scripts/break_reminder.gd).
 
 - **Progress report:** **Grown-ups** on the level map shows, for each level:
   - exercises solved
@@ -160,6 +165,8 @@ Answer buttons are shuffled in the game, so you can always list the right answer
 | `scripts/report.gd` | progress report |
 | `scripts/save_data.gd`, `scripts/profiles.gd` | saved progress for each player |
 | `scripts/lang.gd`, `scripts/i18n/` | English / Greek |
+| `scripts/speech.gd` | read aloud |
+| `scripts/break_reminder.gd` | break reminder |
 | `scripts/hero_sprite.gd`, `player.gd`, `terminal.gd`, `door.gd`, `code_icon.gd`, `exit_portal.gd`, `level_drawer.gd` | the drawn game objects |
 
 ---

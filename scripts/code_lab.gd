@@ -9,6 +9,7 @@ const MiniPython = preload("res://scripts/mini_python.gd")
 const PythonText = preload("res://scripts/python_text.gd")
 const Challenges = preload("res://scripts/lab_challenges.gd")
 const Lang = preload("res://scripts/lang.gd")
+const Speech = preload("res://scripts/speech.gd")
 
 const FREE_PLAY_CODE := "# Free play! Write any Python you like, then press Run.\nname = input(\"What is your name? \")\nprint(\"Hello,\", name)\nfor i in range(3):\n    print(\"Python is fun!\")\n"
 const FREE_PLAY_CODE_EL := "# Γράψε ό,τι θέλεις και πάτα Εκτέλεση!\nname = input(\"Πώς σε λένε; \")\nprint(\"Γεια σου,\", name)\nfor i in range(3):\n    print(\"Η Python είναι τέλεια!\")\n"
@@ -42,6 +43,7 @@ var input_row: HBoxContainer
 var input_edit: LineEdit
 var run_button: Button
 var stop_button: Button
+var read_button: Button
 
 
 func _ready() -> void:
@@ -129,9 +131,9 @@ func _ready() -> void:
 	var hint := _button("Hint", Color("#0369a1"))
 	hint.pressed.connect(_show_hint)
 	buttons.add_child(hint)
-	var tip := _label("Cmd/Ctrl + Enter also runs", 14, Color("#64748b"))
-	tip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	buttons.add_child(tip)
+	read_button = _button("Read aloud", Color("#7c3aed"))
+	read_button.pressed.connect(func() -> void: Speech.say(task_label.text))
+	buttons.add_child(read_button)
 
 	var console_box := PanelContainer.new()
 	console_box.position = Vector2(258, 458)
@@ -171,6 +173,7 @@ func _close() -> void:
 	if py != null:
 		py.stop()
 	_store_draft()
+	Speech.stop()
 	visible = false
 	closed.emit()
 
@@ -229,7 +232,9 @@ func _select(index: int) -> void:
 	editor.set_caret_line(editor.get_line_count() - 1)
 	editor.set_caret_column(editor.get_line(editor.get_line_count() - 1).length())
 	console.clear()
-	_console(tr("Press Run to start your program.") + "\n", Color("#64748b"))
+	_console(tr("Press Run (or Cmd/Ctrl + Enter) to start your program.") + "\n", Color("#64748b"))
+	read_button.visible = Speech.available()
+	Speech.stop()
 	editor.call_deferred("grab_focus")
 
 

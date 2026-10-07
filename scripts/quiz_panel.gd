@@ -10,6 +10,7 @@ signal cancelled
 
 const PythonText = preload("res://scripts/python_text.gd")
 const Lang = preload("res://scripts/lang.gd")
+const Speech = preload("res://scripts/speech.gd")
 const QUESTIONS_PER_QUIZ := 5
 const PASS_MARK := 4
 
@@ -36,6 +37,7 @@ var answer_row: HBoxContainer
 var answer_edit: LineEdit
 var feedback_label: Label
 var next_button: Button
+var read_button: Button
 var result_title: Label
 var result_body: RichTextLabel
 var retry_button: Button
@@ -117,9 +119,13 @@ func _ready() -> void:
 	quiz_view.add_child(feedback_label)
 
 	var bottom := HBoxContainer.new()
-	bottom.alignment = BoxContainer.ALIGNMENT_END
 	bottom.add_theme_constant_override("separation", 10)
 	quiz_view.add_child(bottom)
+	read_button = _button("Read aloud", _read_aloud, Color("#0369a1"))
+	bottom.add_child(read_button)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bottom.add_child(spacer)
 	bottom.add_child(_button("Back to level (Esc)", func() -> void: _cancel(), Color("#334155")))
 	next_button = _button("Next question  >", _on_next, Color("#16a34a"))
 	bottom.add_child(next_button)
@@ -185,6 +191,8 @@ func _show_question() -> void:
 	code_label.text = PythonText.highlight(code)
 	_feedback("", Color.WHITE)
 	next_button.visible = false
+	Speech.stop()
+	read_button.visible = Speech.available()
 	for child in options_grid.get_children():
 		child.queue_free()
 
@@ -307,7 +315,20 @@ func _missed_text() -> String:
 	return text
 
 
+## Reads the question, the answer choices and any feedback.
+func _read_aloud() -> void:
+	var parts := [question_label.text]
+	if options_grid.visible:
+		for b in options_grid.get_children():
+			if not b.is_queued_for_deletion():
+				parts.append(b.text)
+	if feedback_label.text != "":
+		parts.append(feedback_label.text)
+	Speech.say(". ".join(PackedStringArray(parts)))
+
+
 func _cancel() -> void:
+	Speech.stop()
 	visible = false
 	cancelled.emit()
 

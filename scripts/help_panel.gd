@@ -3,6 +3,10 @@ extends Control
 
 signal closed
 
+const Speech = preload("res://scripts/speech.gd")
+
+var read_button: Button
+
 const ROWS := [
 	["Arrows / WASD", "Walk your hero"],
 	["E", "Use a computer and solve its Python puzzles"],
@@ -66,6 +70,20 @@ func _ready() -> void:
 		text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		grid.add_child(text)
 
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 12)
+	v.add_child(row)
+	read_button = Button.new()
+	read_button.text = "Read aloud"
+	read_button.custom_minimum_size = Vector2(160, 40)
+	read_button.add_theme_font_size_override("font_size", 18)
+	read_button.add_theme_stylebox_override("normal", _box(Color("#0369a1"), Color("#38bdf8"), 2, 22, 8))
+	read_button.add_theme_stylebox_override("hover", _box(Color("#0284c7"), Color.WHITE, 2, 22, 8))
+	read_button.add_theme_stylebox_override("pressed", _box(Color("#075985"), Color.WHITE, 2, 22, 8))
+	read_button.pressed.connect(_read_aloud)
+	row.add_child(read_button)
+
 	var ok := Button.new()
 	ok.text = "Got it!"
 	ok.custom_minimum_size = Vector2(160, 40)
@@ -77,14 +95,23 @@ func _ready() -> void:
 	ok.add_theme_stylebox_override("hover", _box(Color("#ffe066"), Color("#ffe066"), 0, 22, 8))
 	ok.add_theme_stylebox_override("pressed", _box(Color("#f5c518"), Color("#f5c518"), 0, 22, 8))
 	ok.pressed.connect(close)
-	v.add_child(ok)
+	row.add_child(ok)
 
 
 func open() -> void:
+	read_button.visible = Speech.available()
 	visible = true
 
 
+func _read_aloud() -> void:
+	var parts := [tr("How to play"), tr("Walk through the levels, solve Python puzzles on the computers and open the doors!")]
+	for row in ROWS:
+		parts.append("%s: %s" % [tr(row[0]), tr(row[1])])
+	Speech.say(". ".join(PackedStringArray(parts)))
+
+
 func close() -> void:
+	Speech.stop()
 	visible = false
 	closed.emit()
 
