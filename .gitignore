@@ -1,0 +1,13 @@
+# Godot's cache - rebuilt automatically when the project is opened
+.godot/
+
+# Exported builds
+/build/
+/export/
+*.dmg
+*.exe
+*.pck
+*.zip
+
+# macOS
+.DS_Store
