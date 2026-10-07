@@ -322,7 +322,10 @@ func _draw_clothes(style: String, c: Color, bob: float) -> void:
 		"superhero":
 			draw_rect(Rect2(-11, y, 22, 14), c)
 			draw_circle(Vector2(0, y + 4.5), 3.6, yellow)
-			draw_string(ThemeDB.fallback_font, Vector2(-3.5, y + 7.3), "P", HORIZONTAL_ALIGNMENT_CENTER, 7, 7, Color("#1e293b"))
+			draw_colored_polygon(PackedVector2Array([
+				Vector2(0.8, y + 1.6), Vector2(-1.6, y + 4.9), Vector2(-0.1, y + 4.9), Vector2(-0.8, y + 7.4),
+				Vector2(1.6, y + 4.1), Vector2(0.1, y + 4.1),
+			]), Color("#1e293b"))  # lightning bolt
 			draw_rect(Rect2(-11, y + 10, 22, 2), yellow)  # belt
 		"labcoat":
 			draw_rect(Rect2(-12, y, 24, 16), Color("#f8fafc"))
@@ -332,7 +335,7 @@ func _draw_clothes(style: String, c: Color, bob: float) -> void:
 			draw_rect(Rect2(4.5, y + 7, 5, 4), Color("#e2e8f0"))  # pocket with pens
 			draw_line(Vector2(5.8, y + 5.5), Vector2(5.8, y + 7.5), Color("#2563eb"), 1.0)
 			draw_line(Vector2(7.6, y + 5.5), Vector2(7.6, y + 7.5), Color("#ef4444"), 1.0)
-		_:  # "tshirt" (the original Python blue & yellow look)
+		_:  # "tshirt" (the original look)
 			draw_rect(Rect2(-11, y, 22, 14), c)
 			draw_rect(Rect2(-11, 3 + bob, 22, 3), yellow)
 

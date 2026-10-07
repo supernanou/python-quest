@@ -8,7 +8,7 @@ signal next_level
 signal to_map
 signal cancelled
 
-const PythonText = preload("res://scripts/python_text.gd")
+const CodeText = preload("res://scripts/code_text.gd")
 const Lang = preload("res://scripts/lang.gd")
 const Speech = preload("res://scripts/speech.gd")
 const QUESTIONS_PER_QUIZ := 5
@@ -188,7 +188,7 @@ func _show_question() -> void:
 	question_label.text = Lang.pick(q, "question")
 	var code: String = q.get("code", "")
 	code_box.visible = code != ""
-	code_label.text = PythonText.highlight(code)
+	code_label.text = CodeText.highlight(code)
 	_feedback("", Color.WHITE)
 	next_button.visible = false
 	Speech.stop()
@@ -213,7 +213,7 @@ func _show_question() -> void:
 		answer_row.visible = true
 		answer_edit.text = ""
 		answer_edit.editable = true
-		answer_edit.placeholder_text = "Type what will be printed..." if q["type"] == "output" else "Type your Python code..."
+		answer_edit.placeholder_text = "Type what will be printed..." if q["type"] == "output" else "Type your code..."
 		answer_edit.call_deferred("grab_focus")
 
 
@@ -249,7 +249,7 @@ func _on_submit() -> void:
 	if answer_edit.text.strip_edges() == "":
 		_feedback("Type an answer first!", Color("#fbbf24"))
 		return
-	var ok := PythonText.matches(answer_edit.text, Lang.answers(q), q["type"], q.get("case_sensitive", false))
+	var ok := CodeText.matches(answer_edit.text, Lang.answers(q), q["type"], q.get("case_sensitive", false))
 	answer_edit.editable = false
 	_after_answer(ok, q["answers"][0])
 
@@ -308,10 +308,10 @@ func _missed_text() -> String:
 		return ""
 	var text := "\n"
 	for m in missed:
-		text += "\n[color=#e2e8f0]%s[/color]" % PythonText.escape(m["question"])
+		text += "\n[color=#e2e8f0]%s[/color]" % CodeText.escape(m["question"])
 		if m["code"] != "":
-			text += "\n[code]%s[/code]" % PythonText.escape(m["code"])
-		text += "\n[color=#4ade80]" + tr("Answer:") + " %s[/color]  [color=#94a3b8]%s[/color]\n" % [PythonText.escape(m["right"]), PythonText.escape(m["explain"])]
+			text += "\n[code]%s[/code]" % CodeText.escape(m["code"])
+		text += "\n[color=#4ade80]" + tr("Answer:") + " %s[/color]  [color=#94a3b8]%s[/color]\n" % [CodeText.escape(m["right"]), CodeText.escape(m["explain"])]
 	return text
 
 

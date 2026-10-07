@@ -9,7 +9,7 @@ var read_button: Button
 
 const ROWS := [
 	["Arrows / WASD", "Walk your hero"],
-	["E", "Use a computer and solve its Python puzzles"],
+	["E", "Use a computer and solve its coding puzzles"],
 	["Enter", "Check your answer"],
 	["</>", "Collect code icons - use them for hints and hero extras"],
 	["EXIT", "Finish the level and take the quiz (4 out of 5 to pass)"],
@@ -46,7 +46,7 @@ func _ready() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
 
-	var intro := _label("Walk through the levels, solve Python puzzles on the computers and open the doors!", 15, Color("#cbd5e1"))
+	var intro := _label("Walk through the levels, solve coding puzzles on the computers and open the doors!", 15, Color("#cbd5e1"))
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	intro.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(intro)
@@ -104,7 +104,7 @@ func open() -> void:
 
 
 func _read_aloud() -> void:
-	var parts := [tr("How to play"), tr("Walk through the levels, solve Python puzzles on the computers and open the doors!")]
+	var parts := [tr("How to play"), tr("Walk through the levels, solve coding puzzles on the computers and open the doors!")]
 	for row in ROWS:
 		parts.append("%s: %s" % [tr(row[0]), tr(row[1])])
 	Speech.say(". ".join(PackedStringArray(parts)))

@@ -11,7 +11,7 @@ const LEVEL := {
 	"exercises": [
 		{
 			"title": "Gluing words",
-			"lesson": "Text in Python is called a string. + glues strings together - with NO space in between.",
+			"lesson": "Text in code is called a string. + glues strings together - with NO space in between.",
 			"code": 'print("Hi" + "Bob")',
 			"question": "What will appear on the screen?",
 			"mode": "output",
@@ -20,7 +20,7 @@ const LEVEL := {
 			"mistakes": {"Hi Bob": "+ glues strings with NO space between them."},
 			"el": {
 				"title": "Κολλάμε λέξεις",
-				"lesson": "Το κείμενο στην Python λέγεται string. Το + κολλάει τα strings μεταξύ τους - ΧΩΡΙΣ κενό ανάμεσα.",
+				"lesson": "Το κείμενο στον κώδικα λέγεται string. Το + κολλάει τα strings μεταξύ τους - ΧΩΡΙΣ κενό ανάμεσα.",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Το + τα κολλάει ακριβώς όπως είναι.",
 				"mistakes": {"Hi Bob": "Το + κολλάει τα strings ΧΩΡΙΣ κενό ανάμεσα."},
@@ -137,19 +137,19 @@ const LEVEL := {
 		},
 		{
 			"title": "First letter",
-			"lesson": "Each letter has a number called an index. Python starts counting at 0, so word[0] is the FIRST letter.",
+			"lesson": "Each letter has a number called an index. The computer starts counting at 0, so word[0] is the FIRST letter.",
 			"code": 'word = "robot"\nprint(word[0])',
 			"question": "What will appear on the screen?",
 			"mode": "output",
 			"answers": ["r"],
 			"hint": "Index 0 is the very first letter.",
-			"mistakes": {"o": "Python starts counting at 0, so [0] is the first letter."},
+			"mistakes": {"o": "The computer starts counting at 0, so [0] is the first letter."},
 			"el": {
 				"title": "Το πρώτο γράμμα",
-				"lesson": "Κάθε γράμμα έχει έναν αριθμό θέσης (index). Η Python μετράει από το 0, οπότε το word[0] είναι το ΠΡΩΤΟ γράμμα.",
+				"lesson": "Κάθε γράμμα έχει έναν αριθμό θέσης (index). Ο υπολογιστής μετράει από το 0, οπότε το word[0] είναι το ΠΡΩΤΟ γράμμα.",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Η θέση 0 είναι το πρώτο-πρώτο γράμμα.",
-				"mistakes": {"o": "Η Python μετράει από το 0, οπότε το [0] είναι το πρώτο γράμμα."},
+				"mistakes": {"o": "Ο υπολογιστής μετράει από το 0, οπότε το [0] είναι το πρώτο γράμμα."},
 			},
 		},
 		{

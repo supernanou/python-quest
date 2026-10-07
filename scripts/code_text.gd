@@ -1,5 +1,5 @@
 extends RefCounted
-## Helpers for checking answers and colouring Python code.
+## Helpers for checking answers and colouring code.
 ## Used by the exercise window and the quiz.
 
 const KEYWORDS := ["def", "return", "if", "elif", "else", "for", "in", "while", "and", "or", "not", "True", "False", "None"]
@@ -37,7 +37,7 @@ static func matches_ignoring_case(text: String, answers: Array, mode: String) ->
 	return false
 
 
-## Colours Python code like a real code editor (BBCode for RichTextLabel).
+## Colours code like a real code editor (BBCode for RichTextLabel).
 static func highlight(code: String) -> String:
 	if _token_re == null:
 		_token_re = RegEx.create_from_string("(\"[^\"]*\"|'[^']*')|(#.*)|\\b(\\d+)\\b|\\b([A-Za-z_]+)\\b")

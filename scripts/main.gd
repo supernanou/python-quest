@@ -1,5 +1,5 @@
 extends Node2D
-## Python Quest - runs the screens and builds each level from its map.
+## Code Quest - runs the screens and builds each level from its map.
 ##
 ## Title -> Who's playing? -> Create your hero (new players) -> Level map -> Level -> Quiz -> next level
 ## From the level map: Notebook, Code Lab and the grown-ups' progress report.
@@ -464,7 +464,7 @@ func _on_quiz_next_level() -> void:
 	else:
 		_clear_level()
 		state = "won"
-		_show_overlay(tr("YOU DID IT, %s!\n\nYou finished the Beginner course:\n100 exercises and 10 quizzes!\nYou are now a Python Hero!\n\n</> icons: %d\n\nPress ENTER to go to the level map") % [_hero_name().to_upper(), save.icons])
+		_show_overlay(tr("YOU DID IT, %s!\n\nYou finished the Beginner course:\n100 exercises and 10 quizzes!\nYou are now a Code Hero!\n\n</> icons: %d\n\nPress ENTER to go to the level map") % [_hero_name().to_upper(), save.icons])
 
 
 # ---------------------------------------------------------------- UI

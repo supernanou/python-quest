@@ -1,22 +1,22 @@
 extends Control
-## The Code Lab: write a whole Python program, press Run, see what it prints.
+## The Code Lab: write a whole program, press Run, see what it prints.
 ## Free play is always open; challenge N unlocks when level N is finished.
 
 signal closed
 signal wallet_changed
 
-const MiniPython = preload("res://scripts/mini_python.gd")
-const PythonText = preload("res://scripts/python_text.gd")
+const CodeRunner = preload("res://scripts/code_runner.gd")
+const CodeText = preload("res://scripts/code_text.gd")
 const Challenges = preload("res://scripts/lab_challenges.gd")
 const Lang = preload("res://scripts/lang.gd")
 const Speech = preload("res://scripts/speech.gd")
 
-const FREE_PLAY_CODE := "# Free play! Write any Python you like, then press Run.\nname = input(\"What is your name? \")\nprint(\"Hello,\", name)\nfor i in range(3):\n    print(\"Python is fun!\")\n"
-const FREE_PLAY_CODE_EL := "# Γράψε ό,τι θέλεις και πάτα Εκτέλεση!\nname = input(\"Πώς σε λένε; \")\nprint(\"Γεια σου,\", name)\nfor i in range(3):\n    print(\"Η Python είναι τέλεια!\")\n"
+const FREE_PLAY_CODE := "# Free play! Write any code you like, then press Run.\nname = input(\"What is your name? \")\nprint(\"Hello,\", name)\nfor i in range(3):\n    print(\"Coding is fun!\")\n"
+const FREE_PLAY_CODE_EL := "# Γράψε ό,τι θέλεις και πάτα Εκτέλεση!\nname = input(\"Πώς σε λένε; \")\nprint(\"Γεια σου,\", name)\nfor i in range(3):\n    print(\"Ο κώδικας είναι τέλειος!\")\n"
 
 const ERROR_TIPS := {
-	"NameError": "Python doesn't know that name. Check the spelling, and make sure you created the variable first.",
-	"SyntaxError": "Python can't read this line. Look for a missing bracket, quote mark or colon.",
+	"NameError": "The computer doesn't know that name. Check the spelling, and make sure you created the variable first.",
+	"SyntaxError": "The computer can't read this line. Look for a missing bracket, quote mark or colon.",
 	"IndentationError": "Check the spaces at the start of the line. Code inside if/for/while/def must be moved right.",
 	"TypeError": "You're mixing types that don't go together, like text + a number. Try str() or int().",
 	"ValueError": "That value can't be turned into what you asked for - like int(\"hello\").",
@@ -30,7 +30,7 @@ const ERROR_TIPS := {
 var save
 var current := -1  # -1 = free play
 var drafts := {}  # what the child typed for each challenge, so switching doesn't lose it
-var py: MiniPython
+var py: CodeRunner
 var running := false
 
 var mono: SystemFont
@@ -63,7 +63,7 @@ func _ready() -> void:
 	add_child(heading)
 	var title := _label("Code Lab", 30, Color("#facc15"))
 	heading.add_child(title)
-	var subtitle := _label("Write real Python and run it!", 16, Color("#94a3b8"))
+	var subtitle := _label("Write real code and run it!", 16, Color("#94a3b8"))
 	subtitle.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	heading.add_child(subtitle)
 
@@ -250,7 +250,7 @@ func _reset_code() -> void:
 
 func _show_hint() -> void:
 	if current == -1:
-		_console("\n" + tr("Tip: print() shows things, input() asks a question, and Python runs top to bottom.") + "\n", Color("#93c5fd"))
+		_console("\n" + tr("Tip: print() shows things, input() asks a question, and the computer runs it from top to bottom.") + "\n", Color("#93c5fd"))
 	else:
 		_console("\n" + tr("Hint:") + " %s\n" % Lang.pick(Challenges.CHALLENGES[current], "hint"), Color("#93c5fd"))
 
@@ -264,7 +264,7 @@ func _run() -> void:
 	run_button.disabled = true
 	stop_button.disabled = false
 	console.clear()
-	py = MiniPython.new()
+	py = CodeRunner.new()
 	py.tree = get_tree()
 	py.printed.connect(func(text: String) -> void: console.add_text(text))
 	py.input_requested.connect(_on_input_requested)
@@ -294,7 +294,7 @@ func _on_input_submitted(text: String) -> void:
 		py.provide_input(text)
 
 
-func _show_error(program: MiniPython) -> void:
+func _show_error(program: CodeRunner) -> void:
 	var kind: String = program.error.split(":")[0]
 	if kind == "Stopped":
 		_console("\n- " + tr("stopped") + " -\n", Color("#94a3b8"))
@@ -315,7 +315,7 @@ func _check_challenge() -> void:
 			return
 	var tests: Array = c.get("tests", [{"inputs": []}])
 	for test in tests:
-		var checker := MiniPython.new()
+		var checker := CodeRunner.new()
 		checker.use_scripted = true
 		checker.scripted_inputs = test["inputs"].duplicate()
 		var ok: bool = await checker.run(code)
@@ -344,7 +344,7 @@ func _check_challenge() -> void:
 	_build_list()
 
 
-func _expected_output(c: Dictionary, test: Dictionary, checker: MiniPython) -> String:
+func _expected_output(c: Dictionary, test: Dictionary, checker: CodeRunner) -> String:
 	if test.has("output"):
 		return test["output"]
 	var check: Dictionary = c.get("check", {})
@@ -389,9 +389,9 @@ func _highlighter() -> CodeHighlighter:
 	hl.symbol_color = Color("#e2e8f0")
 	hl.function_color = Color("#38bdf8")
 	hl.member_variable_color = Color("#e2e8f0")
-	for word in PythonText.KEYWORDS:
+	for word in CodeText.KEYWORDS:
 		hl.add_keyword_color(word, Color("#c084fc"))
-	for word in PythonText.BUILTINS:
+	for word in CodeText.BUILTINS:
 		hl.add_keyword_color(word, Color("#38bdf8"))
 	hl.add_color_region("\"", "\"", Color("#fbbf24"))
 	hl.add_color_region("'", "'", Color("#fbbf24"))

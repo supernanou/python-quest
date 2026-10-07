@@ -6,12 +6,12 @@ extends RefCounted
 const TEXT := {
 	# ---- Title screen
 	"Press ENTER to start": "Πάτα ENTER για να ξεκινήσεις",
-	"Learn Python. Open doors. Become a hero!": "Μάθε Python. Άνοιξε πόρτες. Γίνε ήρωας!",
+	"Learn to code. Open doors. Become a hero!": "Μάθε κώδικα. Άνοιξε πόρτες. Γίνε ήρωας!",
 	"How to play": "Πώς παίζεται",
-	"Walk through the levels, solve Python puzzles on the computers and open the doors!": "Περπάτα στα επίπεδα, λύσε γρίφους Python στους υπολογιστές και άνοιξε τις πόρτες!",
+	"Walk through the levels, solve coding puzzles on the computers and open the doors!": "Περπάτα στα επίπεδα, λύσε γρίφους κώδικα στους υπολογιστές και άνοιξε τις πόρτες!",
 	"Arrows / WASD": "Βελάκια / WASD",
 	"Walk your hero": "Περπάτα με τον ήρωά σου",
-	"Use a computer and solve its Python puzzles": "Χρησιμοποίησε έναν υπολογιστή και λύσε τους γρίφους Python",
+	"Use a computer and solve its coding puzzles": "Χρησιμοποίησε έναν υπολογιστή και λύσε τους γρίφους κώδικα",
 	"Check your answer": "Έλεγξε την απάντησή σου",
 	"Collect code icons - use them for hints and hero extras": "Μάζεψε εικονίδια κώδικα - για βοήθειες και αξεσουάρ για τον ήρωα",
 	"Finish the level and take the quiz (4 out of 5 to pass)": "Τέλος του επιπέδου και κουίζ (4 στις 5 για να περάσεις)",
@@ -130,13 +130,13 @@ const TEXT := {
 	"Press E to code! (%d/%d)": "Πάτα E για κώδικα! (%d/%d)",
 	"Solved! (E to practise)": "Λύθηκε! (E για εξάσκηση)",
 	"EXIT": "ΕΞΟΔΟΣ",
-	"YOU DID IT, %s!\n\nYou finished the Beginner course:\n100 exercises and 10 quizzes!\nYou are now a Python Hero!\n\n</> icons: %d\n\nPress ENTER to go to the level map": "ΤΑ ΚΑΤΑΦΕΡΕΣ, %s!\n\nΤελείωσες τα μαθήματα για αρχάριους:\n100 ασκήσεις και 10 κουίζ!\nΕίσαι πια ήρωας της Python!\n\nΕικονίδια </>: %d\n\nΠάτα ENTER για τον χάρτη",
+	"YOU DID IT, %s!\n\nYou finished the Beginner course:\n100 exercises and 10 quizzes!\nYou are now a Code Hero!\n\n</> icons: %d\n\nPress ENTER to go to the level map": "ΤΑ ΚΑΤΑΦΕΡΕΣ, %s!\n\nΤελείωσες τα μαθήματα για αρχάριους:\n100 ασκήσεις και 10 κουίζ!\nΕίσαι πια ήρωας του κώδικα!\n\nΕικονίδια </>: %d\n\nΠάτα ENTER για τον χάρτη",
 
 	# ---- Exercise window
 	"Computer %s   -   Exercise %d of %d": "Υπολογιστής %s   -   Άσκηση %d από %d",
 	"Error!": "Σφάλμα!",
 	"Type what will be printed...": "Γράψε τι θα εμφανιστεί...",
-	"Type your Python code...": "Γράψε τον κώδικα Python...",
+	"Type your code...": "Γράψε τον κώδικά σου...",
 	"Notes": "Σημειώσεις",
 	"Hint": "Βοήθεια",
 	"Hint (1 </>)": "Βοήθεια (1 </>)",
@@ -149,14 +149,14 @@ const TEXT := {
 	"Type an answer first!": "Γράψε πρώτα μια απάντηση!",
 	"You already solved this computer - practise again!": "Αυτόν τον υπολογιστή τον έλυσες ήδη - κάνε εξάσκηση ξανά!",
 	"Correct, %s! One more to open the door.": "Σωστά, %s! Άλλη μία και ανοίγει η πόρτα.",
-	"Correct, %s! You're a Python wizard! The door is open.": "Σωστά, %s! Είσαι μάγος της Python! Η πόρτα άνοιξε.",
+	"Correct, %s! You're a coding wizard! The door is open.": "Σωστά, %s! Είσαι μάγος του κώδικα! Η πόρτα άνοιξε.",
 	"Not quite - try again!": "Όχι ακριβώς - δοκίμασε ξανά!",
 	"Almost! Have another go.": "Παραλίγο! Ξαναπροσπάθησε.",
 	"Every programmer gets bugs. Try again!": "Όλοι οι προγραμματιστές κάνουν λάθη. Δοκίμασε ξανά!",
 	"Keep going, you can do it!": "Συνέχισε, μπορείς!",
 	"You need a </> icon to buy a hint - find them on the map!\n(After 2 tries you get a free hint.)": "Χρειάζεσαι ένα εικονίδιο </> για βοήθεια - βρες τα στον χάρτη!\n(Μετά από 2 προσπάθειες η βοήθεια είναι δωρεάν.)",
 	"So close! print() shows the words WITHOUT the quote marks.": "Παραλίγο! Το print() δείχνει τις λέξεις ΧΩΡΙΣ τα εισαγωγικά.",
-	"So close! Check your capital letters - Python is picky about them.": "Παραλίγο! Κοίτα τα κεφαλαία γράμματα - η Python τα προσέχει πολύ.",
+	"So close! Check your capital letters - computers are picky about them.": "Παραλίγο! Κοίτα τα κεφαλαία γράμματα - οι υπολογιστές τα προσέχουν πολύ.",
 
 	# ---- Quiz
 	"Level %d Quiz   -   Question %d of %d": "Κουίζ επιπέδου %d   -   Ερώτηση %d από %d",
@@ -179,7 +179,7 @@ const TEXT := {
 	"+%d </> bonus icons for passing!": "+%d εικονίδια </> δώρο που πέρασες!",
 
 	# ---- Notebook
-	"My Python Notebook": "Το σημειωματάριό μου",
+	"My Code Notebook": "Το σημειωματάριό μου",
 	"Level %d: %s": "Επίπεδο %d: %s",
 	"Solve exercises in this level and your notes will appear here!": "Λύσε ασκήσεις σε αυτό το επίπεδο και οι σημειώσεις σου θα εμφανιστούν εδώ!",
 
@@ -204,7 +204,7 @@ const TEXT := {
 	"used a hint": "χρησιμοποίησε βοήθεια",
 
 	# ---- Code Lab
-	"Write real Python and run it!": "Γράψε αληθινή Python και τρέξ' τη!",
+	"Write real code and run it!": "Γράψε αληθινό κώδικα και τρέξ' τον!",
 	"Back": "Πίσω",
 	"< Back": "< Πίσω",
 	"Free play": "Ελεύθερο παιχνίδι",
@@ -217,7 +217,7 @@ const TEXT := {
 	"Challenge %d:": "Πρόκληση %d:",
 	"Free play: write anything you like! Try changing this program, then press Run.": "Ελεύθερο παιχνίδι: γράψε ό,τι θέλεις! Άλλαξε αυτό το πρόγραμμα και πάτα Εκτέλεση.",
 	"Press Run to start your program.": "Πάτα Εκτέλεση για να τρέξει το πρόγραμμά σου.",
-	"Tip: print() shows things, input() asks a question, and Python runs top to bottom.": "Συμβουλή: το print() δείχνει πράγματα, το input() κάνει ερώτηση, και η Python διαβάζει από πάνω προς τα κάτω.",
+	"Tip: print() shows things, input() asks a question, and the computer runs it from top to bottom.": "Συμβουλή: το print() δείχνει πράγματα, το input() κάνει ερώτηση, και ο υπολογιστής διαβάζει από πάνω προς τα κάτω.",
 	"program finished": "το πρόγραμμα τελείωσε",
 	"stopped": "σταμάτησε",
 	"Line %d:": "Γραμμή %d:",
@@ -234,8 +234,8 @@ const TEXT := {
 	"Almost! Make a variable called %s.": "Παραλίγο! Φτιάξε μια μεταβλητή με όνομα %s.",
 	"Almost! %s should be a list with %d things in it.": "Παραλίγο! Το %s πρέπει να είναι λίστα με %d πράγματα.",
 	"Almost! Put something inside %s.": "Παραλίγο! Βάλε κάτι μέσα στο %s.",
-	"Python doesn't know that name. Check the spelling, and make sure you created the variable first.": "Η Python δεν ξέρει αυτό το όνομα. Έλεγξε την ορθογραφία και ότι έφτιαξες πρώτα τη μεταβλητή.",
-	"Python can't read this line. Look for a missing bracket, quote mark or colon.": "Η Python δεν μπορεί να διαβάσει αυτή τη γραμμή. Ψάξε για παρένθεση, εισαγωγικό ή άνω-κάτω τελεία που λείπει.",
+	"The computer doesn't know that name. Check the spelling, and make sure you created the variable first.": "Ο υπολογιστής δεν ξέρει αυτό το όνομα. Έλεγξε την ορθογραφία και ότι έφτιαξες πρώτα τη μεταβλητή.",
+	"The computer can't read this line. Look for a missing bracket, quote mark or colon.": "Ο υπολογιστής δεν μπορεί να διαβάσει αυτή τη γραμμή. Ψάξε για παρένθεση, εισαγωγικό ή άνω-κάτω τελεία που λείπει.",
 	"Check the spaces at the start of the line. Code inside if/for/while/def must be moved right.": "Έλεγξε τα κενά στην αρχή της γραμμής. Ο κώδικας μέσα σε if/for/while/def πρέπει να είναι μετακινημένος δεξιά.",
 	"You're mixing types that don't go together, like text + a number. Try str() or int().": "Ανακατεύεις πράγματα που δεν ταιριάζουν, όπως κείμενο + αριθμό. Δοκίμασε str() ή int().",
 	"That value can't be turned into what you asked for - like int(\"hello\").": "Αυτή η τιμή δεν μπορεί να γίνει αυτό που ζήτησες - όπως int(\"hello\").",

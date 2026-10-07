@@ -11,7 +11,7 @@ const LEVEL := {
 	"exercises": [
 		{
 			"title": "Is it bigger?",
-			"lesson": "Python can answer questions with True or False. > means \"is bigger than\".",
+			"lesson": "The computer can answer questions with True or False. > means \"is bigger than\".",
 			"code": "print(5 > 3)",
 			"question": "What will appear on the screen?",
 			"mode": "output",
@@ -19,14 +19,14 @@ const LEVEL := {
 			"hint": "Is 5 bigger than 3?",
 			"el": {
 				"title": "Είναι μεγαλύτερο;",
-				"lesson": "Η Python απαντάει σε ερωτήσεις με True (αληθές) ή False (ψευδές). Το > σημαίνει \"είναι μεγαλύτερο από\".",
+				"lesson": "Ο υπολογιστής απαντάει σε ερωτήσεις με True (αληθές) ή False (ψευδές). Το > σημαίνει \"είναι μεγαλύτερο από\".",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Είναι το 5 μεγαλύτερο από το 3;",
 			},
 		},
 		{
 			"title": "Not bigger",
-			"lesson": "If the answer is no, Python says False.",
+			"lesson": "If the answer is no, the computer says False.",
 			"code": "print(2 > 9)",
 			"question": "What will appear on the screen?",
 			"mode": "output",
@@ -34,7 +34,7 @@ const LEVEL := {
 			"hint": "Is 2 bigger than 9?",
 			"el": {
 				"title": "Όχι μεγαλύτερο",
-				"lesson": "Αν η απάντηση είναι όχι, η Python λέει False.",
+				"lesson": "Αν η απάντηση είναι όχι, ο υπολογιστής λέει False.",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Είναι το 2 μεγαλύτερο από το 9;",
 			},

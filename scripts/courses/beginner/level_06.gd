@@ -11,7 +11,7 @@ const LEVEL := {
 	"exercises": [
 		{
 			"title": "If this, then that",
-			"lesson": "if lets Python make choices. If the test is True, the indented code runs. Otherwise, the else part runs.",
+			"lesson": "if lets the computer make choices. If the test is True, the indented code runs. Otherwise, the else part runs.",
 			"code": 'age = 10\nif age > 8:\n    print("You can ride!")\nelse:\n    print("Too small!")',
 			"question": "What will appear on the screen?",
 			"mode": "output",
@@ -19,7 +19,7 @@ const LEVEL := {
 			"hint": "Is 10 bigger than 8?",
 			"el": {
 				"title": "Αν συμβεί αυτό...",
-				"lesson": "Το if αφήνει την Python να κάνει επιλογές. Αν ο έλεγχος είναι True, τρέχει ο κώδικας με εσοχή. Αλλιώς, τρέχει το κομμάτι του else.",
+				"lesson": "Το if αφήνει τον υπολογιστή να κάνει επιλογές. Αν ο έλεγχος είναι True, τρέχει ο κώδικας με εσοχή. Αλλιώς, τρέχει το κομμάτι του else.",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Είναι το 10 μεγαλύτερο από το 8;",
 			},
@@ -56,7 +56,7 @@ const LEVEL := {
 		},
 		{
 			"title": "Skipped!",
-			"lesson": "If the test is False and there's no else, Python skips the indented lines.",
+			"lesson": "If the test is False and there's no else, the computer skips the indented lines.",
 			"code": 'temp = 10\nif temp > 25:\n    print("Hot!")\nprint("Done")',
 			"question": "What will appear on the screen?",
 			"mode": "output",
@@ -64,14 +64,14 @@ const LEVEL := {
 			"hint": "Is 10 bigger than 25? Which line always runs?",
 			"el": {
 				"title": "Προσπεράστηκε!",
-				"lesson": "Αν ο έλεγχος είναι False και δεν υπάρχει else, η Python προσπερνά τις γραμμές με εσοχή.",
+				"lesson": "Αν ο έλεγχος είναι False και δεν υπάρχει else, ο υπολογιστής προσπερνά τις γραμμές με εσοχή.",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Είναι το 10 μεγαλύτερο από το 25; Ποια γραμμή τρέχει πάντα;",
 			},
 		},
 		{
 			"title": "More choices with elif",
-			"lesson": "elif means \"else if\". Python checks each test from the top and runs the FIRST one that is True.",
+			"lesson": "elif means \"else if\". The computer checks each test from the top and runs the FIRST one that is True.",
 			"code": 'score = 75\nif score >= 90:\n    print("A")\nelif score >= 70:\n    print("B")\nelse:\n    print("C")',
 			"question": "What will appear on the screen?",
 			"mode": "output",
@@ -79,14 +79,14 @@ const LEVEL := {
 			"hint": "Is 75 >= 90? Is 75 >= 70?",
 			"el": {
 				"title": "Περισσότερες επιλογές με elif",
-				"lesson": "Το elif σημαίνει \"αλλιώς αν\". Η Python κοιτάει κάθε έλεγχο από πάνω και τρέχει τον ΠΡΩΤΟ που είναι True.",
+				"lesson": "Το elif σημαίνει \"αλλιώς αν\". Ο υπολογιστής κοιτάει κάθε έλεγχο από πάνω και τρέχει τον ΠΡΩΤΟ που είναι True.",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Είναι 75 >= 90; Είναι 75 >= 70;",
 			},
 		},
 		{
 			"title": "Move it right!",
-			"lesson": "Code inside an if must be indented (moved to the right with spaces). If it isn't, Python shows an IndentationError.",
+			"lesson": "Code inside an if must be indented (moved to the right with spaces). If it isn't, the computer shows an IndentationError.",
 			"code": 'x = 7\nif x > 5:\nprint("Big!")',
 			"error": "IndentationError: expected an indented block after 'if' statement on line 2",
 			"question": "Which line needs to be moved to the right? Type its line number.",
@@ -95,7 +95,7 @@ const LEVEL := {
 			"hint": "Which line belongs INSIDE the if?",
 			"el": {
 				"title": "Μετακίνησέ το δεξιά!",
-				"lesson": "Ο κώδικας μέσα σε ένα if πρέπει να έχει εσοχή (να είναι μετακινημένος δεξιά με κενά). Αν δεν έχει, η Python βγάζει IndentationError.",
+				"lesson": "Ο κώδικας μέσα σε ένα if πρέπει να έχει εσοχή (να είναι μετακινημένος δεξιά με κενά). Αν δεν έχει, ο υπολογιστής βγάζει IndentationError.",
 				"question": "Ποια γραμμή πρέπει να μετακινηθεί δεξιά; Γράψε τον αριθμό της.",
 				"hint": "Ποια γραμμή ανήκει ΜΕΣΑ στο if;",
 			},

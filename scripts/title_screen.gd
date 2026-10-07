@@ -6,8 +6,8 @@ signal start_pressed
 const HeroSprite = preload("res://scripts/hero_sprite.gd")
 const LangToggle = preload("res://scripts/lang_toggle.gd")
 const HelpPanel = preload("res://scripts/help_panel.gd")
-const TITLE := "Python Quest"
-const TITLE_COLORS := [Color("#4b8bbe"), Color("#ffd43b")]
+const TITLE := "Code Quest"
+const TITLE_COLORS := [Color("#4ade80"), Color("#fb923c")]
 const GRASS_TOP := 510.0
 
 var t := 0.0
@@ -126,7 +126,7 @@ func _draw() -> void:
 			color_index += 1
 		x += title_font.get_string_size(ch, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 
-	draw_string(ThemeDB.fallback_font, Vector2(0, 245), tr("Learn Python. Open doors. Become a hero!"),
+	draw_string(ThemeDB.fallback_font, Vector2(0, 245), tr("Learn to code. Open doors. Become a hero!"),
 			HORIZONTAL_ALIGNMENT_CENTER, size.x, 24, Color("#94a3b8"))
 
 	# Grass strip for the hero to walk on

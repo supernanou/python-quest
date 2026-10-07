@@ -1,10 +1,10 @@
 extends Control
-## "My Python Notebook": a note card for every exercise the player has solved,
+## "My Code Notebook": a note card for every exercise the player has solved,
 ## so they can look back at what they learned.
 
 signal closed
 
-const PythonText = preload("res://scripts/python_text.gd")
+const CodeText = preload("res://scripts/code_text.gd")
 const Lang = preload("res://scripts/lang.gd")
 
 var levels: Array = []
@@ -33,7 +33,7 @@ func _ready() -> void:
 	book.add_theme_stylebox_override("panel", _box(Color("#fef9c3"), Color("#a16207"), 4, 16, 0))
 	add_child(book)
 
-	var title := _label("My Python Notebook", 21, Color("#713f12"))
+	var title := _label("My Code Notebook", 21, Color("#713f12"))
 	title.position = Vector2(44, 34)
 	add_child(title)
 
@@ -138,7 +138,7 @@ func _card(exercise: Dictionary) -> PanelContainer:
 	code.scroll_active = false
 	code.add_theme_font_override("normal_font", mono)
 	code.add_theme_font_size_override("normal_font_size", 16)
-	code.text = PythonText.highlight(exercise["code"])
+	code.text = CodeText.highlight(exercise["code"])
 	code_box.add_child(code)
 	if exercise.has("error"):
 		var error := _label(tr("Error!") + "  " + exercise["error"], 14, Color("#b91c1c"))

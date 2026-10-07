@@ -5,7 +5,7 @@ extends RefCounted
 ##   sentence is in scripts/i18n/greek_ui.gd.
 ## - Course content keeps its Greek right next to the English in each level file:
 ##   an exercise can have "el": {"title": ..., "lesson": ..., "question": ..., "hint": ...}.
-## - Python code is never translated - Python is written in English everywhere.
+## - Code is never translated - code is written in English everywhere.
 
 const GreekUI = preload("res://scripts/i18n/greek_ui.gd")
 

@@ -1,5 +1,5 @@
 extends Control
-## The pop-up window where a child reads Python code and types an answer.
+## The pop-up window where a child reads code and types an answer.
 ## Each computer has a short list of exercises, shown one after another.
 
 signal exercise_solved(letter: String, index: int)
@@ -7,7 +7,7 @@ signal wallet_changed
 signal notebook_requested
 signal closed
 
-const PythonText = preload("res://scripts/python_text.gd")
+const CodeText = preload("res://scripts/code_text.gd")
 const Lang = preload("res://scripts/lang.gd")
 const Speech = preload("res://scripts/speech.gd")
 const HINT_PRICE := 1
@@ -88,7 +88,7 @@ func _ready() -> void:
 	code_label.add_theme_font_size_override("normal_font_size", 20)
 	code_box.add_child(code_label)
 
-	# Some exercises show the error Python gives, so kids learn to read them
+	# Some exercises show the error the computer gives, so kids learn to read them
 	error_box = PanelContainer.new()
 	error_box.add_theme_stylebox_override("panel", _style(Color("#2a0a0a"), Color("#ef4444"), 2, 8, 10))
 	v.add_child(error_box)
@@ -164,7 +164,7 @@ func _show_exercise(i: int) -> void:
 	step_label.text = tr("Computer %s   -   Exercise %d of %d") % [letter.to_upper(), i + 1, exercises.size()]
 	title_label.text = Lang.pick(puzzle, "title")
 	lesson_label.text = Lang.pick(puzzle, "lesson")
-	code_label.text = PythonText.highlight(puzzle["code"])
+	code_label.text = CodeText.highlight(puzzle["code"])
 	error_box.visible = puzzle.has("error")
 	error_label.text = tr("Error!") + "  " + puzzle.get("error", "")
 	question_label.text = Lang.pick(puzzle, "question")
@@ -173,7 +173,7 @@ func _show_exercise(i: int) -> void:
 	if puzzle["mode"] == "output":
 		answer_edit.placeholder_text = "Type what will be printed..."
 	else:
-		answer_edit.placeholder_text = "Type your Python code..."
+		answer_edit.placeholder_text = "Type your code..."
 	_feedback("", Color.WHITE)
 	run_button.text = "Run  >"
 	_update_hint_button()
@@ -199,7 +199,7 @@ func _on_run() -> void:
 	if answer.strip_edges() == "":
 		_feedback("Type an answer first!", Color("#fbbf24"))
 		return
-	if PythonText.matches(answer, Lang.answers(puzzle), puzzle["mode"], puzzle.get("case_sensitive", false)):
+	if CodeText.matches(answer, Lang.answers(puzzle), puzzle["mode"], puzzle.get("case_sensitive", false)):
 		solved_now = true
 		answer_edit.editable = false
 		var more := index + 1 < exercises.size()
@@ -208,7 +208,7 @@ func _on_run() -> void:
 		if more:
 			_feedback(tr("Correct, %s! One more to open the door.") % hero_name, Color("#4ade80"))
 		else:
-			_feedback(tr("Correct, %s! You're a Python wizard! The door is open.") % hero_name, Color("#4ade80"))
+			_feedback(tr("Correct, %s! You're a coding wizard! The door is open.") % hero_name, Color("#4ade80"))
 		if save != null:
 			save.record_solved(puzzle.get("id", ""))
 		exercise_solved.emit(letter, index)
@@ -263,17 +263,17 @@ func _update_hint_button() -> void:
 func _mistake_tip(answer: String) -> String:
 	var mode: String = puzzle["mode"]
 	var case_sensitive: bool = puzzle.get("case_sensitive", false)
-	var given := PythonText.normalize(answer, mode, case_sensitive)
+	var given := CodeText.normalize(answer, mode, case_sensitive)
 	var mistakes: Dictionary = Lang.mistakes(puzzle)
 	for wrong in mistakes:
-		if given == PythonText.normalize(wrong, mode, case_sensitive):
+		if given == CodeText.normalize(wrong, mode, case_sensitive):
 			return tr(mistakes[wrong])
 	if mode == "output" and answer.strip_edges().length() > 2:
 		var unquoted := answer.strip_edges().trim_prefix("\"").trim_suffix("\"").trim_prefix("'").trim_suffix("'")
-		if PythonText.matches(unquoted, Lang.answers(puzzle), mode, case_sensitive):
+		if CodeText.matches(unquoted, Lang.answers(puzzle), mode, case_sensitive):
 			return "So close! print() shows the words WITHOUT the quote marks."
-	if (mode == "code" or case_sensitive) and PythonText.matches_ignoring_case(answer, Lang.answers(puzzle), mode):
-		return "So close! Check your capital letters - Python is picky about them."
+	if (mode == "code" or case_sensitive) and CodeText.matches_ignoring_case(answer, Lang.answers(puzzle), mode):
+		return "So close! Check your capital letters - computers are picky about them."
 	return ""
 
 

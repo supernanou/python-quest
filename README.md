@@ -1,6 +1,6 @@
-# Python Quest
+# Code Quest
 
-**A game that teaches kids Python.** Kids create a hero and walk through 10 levels. At each computer they solve a Python exercise to open a door, and every level ends with a quiz. The game is in **English and Greek (Ελληνικά)**.
+**A game that teaches kids to code.** Kids create a hero and walk through 10 levels. At each computer they solve a coding exercise to open a door, and every level ends with a quiz. The game is in **English and Greek (Ελληνικά)**.
 
 Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 
@@ -11,7 +11,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 - **100 exercises in 10 levels,** from `print()` to functions, written for beginners.
 - **A quiz at the end of every level:** 5 questions, mixing click-an-answer and typed answers. Kids need 4 out of 5 to pass, and missed answers are explained before they try again.
 - **Code Lab:** kids write whole programs, press **Run** and see the output, with `input()` and friendly error messages. It includes 10 challenges that the game checks automatically.
-- **Python Notebook:** every lesson a child solves is saved as a note card they can look back at.
+- **Code Notebook:** every lesson a child solves is saved as a note card they can look back at.
 - **Hero creator:** a name, skin colour, **10 hairstyles** (short, long, ponytail, pigtails, bun, curly, braids, spiky, bob, buzz cut) and **10 outfits** (T-shirt, dress, hoodie, dungarees, sports top, skirt, jacket, stripes, superhero, lab coat) in any colour. Anyone can pick any style. Extras such as a cap, sunglasses, headphones, a crown or a wizard hat are unlocked with icons.
 - **Every child can make a hero like them:** the free **About me** tab offers a wheelchair, crutches, leg braces, a prosthetic leg or arm, glasses, an eye patch, hearing aids, a cochlear implant, ear defenders, an insulin pump and a service dog.
 - **`</>` code icons** to collect on the maps, spent on hints and hero extras.
@@ -56,7 +56,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 | Key | What it does |
 |---|---|
 | Arrow keys / WASD | Walk |
-| **E** | Use a computer and solve its Python exercises |
+| **E** | Use a computer and solve its coding exercises |
 | **Enter** | Check your answer |
 | **Esc** | Go back / close a window |
 | **N** | Open your notebook |
@@ -72,7 +72,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 
 | Level | Topics |
 |---|---|
-| 1. Hello, Python! | `print()`, `#` comments, reading error messages |
+| 1. Hello, Code! | `print()`, `#` comments, reading error messages |
 | 2. Variable Boxes | variables, `=`, `input()`, NameError |
 | 3. Math Magic | `+ - * / // %`, order of operations |
 | 4. String Fun | joining text, `len()`, `.upper()`, indexes, `int()` and `str()` |
@@ -83,7 +83,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 | 9. List Land | lists, `.append()`, `[-1]`, `in` |
 | 10. Function Castle | `def`, `return`, calling functions |
 
-The Python code itself stays in English in both languages, because Python is written in English everywhere. Everything around the code is translated.
+The code itself stays in English in both languages, because programming languages are written in English everywhere. Everything around the code is translated.
 
 ## For parents and teachers
 
@@ -124,15 +124,15 @@ Each level is one file in [`scripts/courses/beginner/`](scripts/courses/beginner
 ```gdscript
 {
     "title": "Who goes first?",
-    "lesson": "Python does * BEFORE +.",
+    "lesson": "The computer does * BEFORE +.",
     "code": "print(3 + 4 * 2)",
     "question": "What will appear on the screen?",
-    "mode": "output",            # "output" = type what's printed, "code" = write Python
+    "mode": "output",            # "output" = type what's printed, "code" = write code
     "answers": ["11"],           # any of these is accepted
     "hint": "Do 4 * 2 first.",
-    "mistakes": {"14": "Python multiplies first!"},   # optional tips for common wrong answers
+    "mistakes": {"14": "The computer multiplies first!"},   # optional tips for common wrong answers
     "case_sensitive": true,      # optional: capitals must match
-    "error": "NameError: ...",   # optional: shows a red Python error box
+    "error": "NameError: ...",   # optional: shows a red error box
     "el": {"title": "...", "lesson": "...", "question": "...", "hint": "..."},  # Greek
 },
 ```
@@ -163,21 +163,21 @@ Answer buttons are shuffled in the game, so you can always list the right answer
 ## How it's built
 
 - **Godot 4, GDScript only.** Every character, door and computer is drawn with code, so there are no image or sound files to manage.
-- **A small Python inside the game** ([`scripts/mini_python.gd`](scripts/mini_python.gd)) powers the Code Lab. It covers the whole Beginner course and gives Python-style error messages. It was checked against real Python on 181 programs and gave identical results.
-- **Every exercise and quiz answer was checked** by running its code in real Python.
+- **A small code runner inside the game** ([`scripts/code_runner.gd`](scripts/code_runner.gd)) powers the Code Lab. It covers the whole Beginner course and gives real-style error messages. It was checked against the real language on 181 programs and gave identical results.
+- **Every exercise and quiz answer was checked** by running its code in the real programming language.
 
 | File | What it does |
 |---|---|
 | `scripts/main.gd` | screen flow and level building |
 | `scripts/puzzle_panel.gd` | exercise window |
 | `scripts/quiz_panel.gd` | end-of-level quiz |
-| `scripts/code_lab.gd`, `scripts/mini_python.gd` | Code Lab and its built-in Python |
+| `scripts/code_lab.gd`, `scripts/code_runner.gd` | Code Lab and its built-in code runner |
 | `scripts/level_select.gd` | level map |
 | `scripts/title_screen.gd` | title screen |
 | `scripts/help_panel.gd` | "How to play" menu |
 | `scripts/character_creator.gd` | hero creator |
 | `scripts/profile_select.gd` | "Who's playing?" screen |
-| `scripts/notebook.gd` | Python Notebook |
+| `scripts/notebook.gd` | Code Notebook |
 | `scripts/report.gd` | progress report |
 | `scripts/save_data.gd`, `scripts/profiles.gd` | saved progress for each player |
 | `scripts/lang.gd`, `scripts/i18n/` | English / Greek |

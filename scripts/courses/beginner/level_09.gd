@@ -11,19 +11,19 @@ const LEVEL := {
 	"exercises": [
 		{
 			"title": "A list of things",
-			"lesson": "A list holds many things in order, inside [ ]. Python starts counting at 0, so the first item is number 0!",
+			"lesson": "A list holds many things in order, inside [ ]. The computer starts counting at 0, so the first item is number 0!",
 			"code": 'colors = ["red", "green", "blue"]\nprint(colors[0])',
 			"question": "What will appear on the screen?",
 			"mode": "output",
 			"answers": ["red"],
 			"hint": "Item 0 is the FIRST item.",
-			"mistakes": {"green": "Remember, Python starts counting at 0, not 1!"},
+			"mistakes": {"green": "Remember, the computer starts counting at 0, not 1!"},
 			"el": {
 				"title": "Μια λίστα με πράγματα",
-				"lesson": "Μια λίστα κρατάει πολλά πράγματα με σειρά, μέσα σε [ ]. Η Python μετράει από το 0, άρα το πρώτο στοιχείο είναι το νούμερο 0!",
+				"lesson": "Μια λίστα κρατάει πολλά πράγματα με σειρά, μέσα σε [ ]. Ο υπολογιστής μετράει από το 0, άρα το πρώτο στοιχείο είναι το νούμερο 0!",
 				"question": "Τι θα εμφανιστεί στην οθόνη;",
 				"hint": "Το στοιχείο 0 είναι το ΠΡΩΤΟ.",
-				"mistakes": {"green": "Θυμήσου, η Python μετράει από το 0, όχι από το 1!"},
+				"mistakes": {"green": "Θυμήσου, ο υπολογιστής μετράει από το 0, όχι από το 1!"},
 			},
 		},
 		{
@@ -183,10 +183,10 @@ const LEVEL := {
 			"question": "What number is the FIRST item in a list?",
 			"options": ["0", "1", "-1"],
 			"answer": 0,
-			"explain": "Python starts counting at 0.",
+			"explain": "The computer starts counting at 0.",
 			"el": {
 				"question": "Τι αριθμό έχει το ΠΡΩΤΟ στοιχείο μιας λίστας;",
-				"explain": "Η Python μετράει από το 0.",
+				"explain": "Ο υπολογιστής μετράει από το 0.",
 			},
 		},
 		{

@@ -1,10 +1,10 @@
 extends RefCounted
-## A tiny Python for the Code Lab. It understands everything in the Beginner
+## A small code runner for the Code Lab. It understands everything in the Beginner
 ## course: print, input, variables, maths, strings, True/False, if/elif/else,
-## for, while, lists, functions (def/return) - and gives Python-style errors.
+## for, while, lists, functions (def/return) - and gives real-style error messages.
 ##
 ## Usage:
-##   var py := MiniPython.new()
+##   var py := CodeRunner.new()
 ##   py.printed.connect(func(text): console.add(text))
 ##   var ok := await py.run(source)
 ##   if not ok: show(py.error, py.error_line)
@@ -690,7 +690,7 @@ func _eval(e: Dictionary):
 			var a = await _eval(e["a"])
 			if error != "":
 				return null
-			# Python returns one of the two values (it stops early if it can)
+			# 'and' / 'or' give back one of the two values (they stop early if they can)
 			if _truthy(a) == (e["op"] == "or"):
 				return a
 			return await _eval(e["b"])
