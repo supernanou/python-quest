@@ -1,6 +1,8 @@
 extends Control
-## "Create your hero" screen: pick boy or girl, colours, a name,
-## and extras that are unlocked with </> code icons.
+## "Create your hero" screen. Two tabs:
+##   Look     - boy or girl, colours, and extras unlocked with </> code icons
+##   About me - wheelchair, hearing aids, glasses... so every child can make a hero
+##              just like them. These are always free.
 
 signal confirmed(look: Dictionary)
 signal back
@@ -13,7 +15,7 @@ const HAIRS := ["#2b1d14", "#6b3e26", "#c68642", "#f2d16b", "#e25822", "#7c3aed"
 const OUTFITS := ["#3776ab", "#ef4444", "#22c55e", "#f59e0b", "#ec4899", "#8b5cf6"]
 
 var save  # SaveData: icons and owned items
-var look: Dictionary = HeroSprite.DEFAULT_LOOK.duplicate()
+var look: Dictionary = HeroSprite.DEFAULT_LOOK.duplicate(true)
 var preview: HeroSprite
 var name_edit: LineEdit
 var name_tag: Label
@@ -23,6 +25,11 @@ var boy_button: Button
 var girl_button: Button
 var swatches := {}  # "skin" -> [[button, "#hex"], ...]
 var item_buttons := {}  # "crown" -> button
+var aid_buttons := {}  # "wheelchair" -> button
+var look_page: VBoxContainer
+var me_page: VBoxContainer
+var look_tab: Button
+var me_tab: Button
 
 
 func _ready() -> void:
@@ -68,7 +75,7 @@ func _ready() -> void:
 	var v := VBoxContainer.new()
 	v.position = Vector2(400, 100)
 	v.size = Vector2(520, 440)
-	v.add_theme_constant_override("separation", 12)
+	v.add_theme_constant_override("separation", 10)
 	add_child(v)
 
 	name_edit = LineEdit.new()
@@ -80,18 +87,61 @@ func _ready() -> void:
 	name_edit.text_submitted.connect(func(_t: String) -> void: _confirm())
 	_row(v, "Name").add_child(name_edit)
 
+	# Tabs: Look | About me
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation", 8)
+	v.add_child(tabs)
+	var tab_group := ButtonGroup.new()
+	look_tab = _choice_button("Look", tab_group, func() -> void: _show_tab(false))
+	me_tab = _choice_button("About me", tab_group, func() -> void: _show_tab(true))
+	for tab in [look_tab, me_tab]:
+		tab.custom_minimum_size = Vector2(0, 40)
+		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab.add_theme_font_size_override("font_size", 19)
+		tabs.add_child(tab)
+
+	look_page = VBoxContainer.new()
+	look_page.add_theme_constant_override("separation", 10)
+	look_page.custom_minimum_size = Vector2(0, 278)
+	v.add_child(look_page)
+
 	var group := ButtonGroup.new()
 	boy_button = _choice_button("Boy", group, func() -> void: _set_value("style", "boy"))
 	girl_button = _choice_button("Girl", group, func() -> void: _set_value("style", "girl"))
-	var style_row := _row(v, "I am a")
+	var style_row := _row(look_page, "I am a")
 	style_row.add_child(boy_button)
 	style_row.add_child(girl_button)
 
-	_swatch_row(v, "Skin", "skin", SKINS)
-	_swatch_row(v, "Hair", "hair", HAIRS)
-	_swatch_row(v, "Outfit", "outfit", OUTFITS)
+	_swatch_row(look_page, "Skin", "skin", SKINS)
+	_swatch_row(look_page, "Hair", "hair", HAIRS)
+	_swatch_row(look_page, "Outfit", "outfit", OUTFITS)
 
-	var items_row := _row(v, "Extras")
+	# "About me": free, pick as many as you like
+	me_page = VBoxContainer.new()
+	me_page.add_theme_constant_override("separation", 10)
+	me_page.custom_minimum_size = Vector2(0, 278)
+	me_page.visible = false
+	v.add_child(me_page)
+	var intro := _label("Make your hero just like you! Pick anything you use - you can choose more than one.", 16, Color("#cbd5e1"))
+	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	me_page.add_child(intro)
+	var aid_grid := GridContainer.new()
+	aid_grid.columns = 3
+	aid_grid.add_theme_constant_override("h_separation", 8)
+	aid_grid.add_theme_constant_override("v_separation", 8)
+	me_page.add_child(aid_grid)
+	for aid in HeroSprite.AIDS:
+		var button := Button.new()
+		button.text = aid["name"]
+		button.toggle_mode = true
+		button.custom_minimum_size = Vector2(166, 44)
+		button.add_theme_font_size_override("font_size", 14)
+		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		button.toggled.connect(_on_aid_toggled.bind(aid["id"]))
+		aid_grid.add_child(button)
+		aid_buttons[aid["id"]] = button
+
+	var items_row := _row(look_page, "Extras")
 	items_row.add_theme_constant_override("separation", 6)
 	for item in HeroSprite.ITEMS:
 		var button := Button.new()
@@ -129,8 +179,10 @@ func _ready() -> void:
 
 func open(p_save) -> void:
 	save = p_save
-	look = HeroSprite.DEFAULT_LOOK.duplicate()
-	look.merge(save.look, true)
+	look = HeroSprite.DEFAULT_LOOK.duplicate(true)
+	look.merge(save.look.duplicate(true), true)
+	look_tab.button_pressed = true
+	_show_tab(false)
 	name_edit.text = look["name"]
 	message_label.text = ""
 	_refresh()
@@ -160,11 +212,29 @@ func _input(event: InputEvent) -> void:
 func _confirm() -> void:
 	look["name"] = name_edit.text.strip_edges()
 	visible = false
-	confirmed.emit(look.duplicate())
+	confirmed.emit(look.duplicate(true))
 
 
 func _on_name_changed(text: String) -> void:
 	look["name"] = text.strip_edges()
+	_refresh()
+
+
+func _show_tab(about_me: bool) -> void:
+	look_page.visible = not about_me
+	me_page.visible = about_me
+	look_tab.set_pressed_no_signal(not about_me)
+	me_tab.set_pressed_no_signal(about_me)
+
+
+func _on_aid_toggled(on: bool, id: String) -> void:
+	var aids: Array = look["aids"]
+	if on and not id in aids:
+		aids.append(id)
+		for other in HeroSprite.AID_CONFLICTS.get(id, []):
+			aids.erase(other)
+	elif not on:
+		aids.erase(id)
 	_refresh()
 
 
@@ -200,6 +270,19 @@ func _randomize() -> void:
 func _refresh() -> void:
 	preview.look = look
 	preview.queue_redraw()
+	# Zoom out a little when the service dog is there, so everyone fits on the stage
+	var with_dog: bool = "service_dog" in look["aids"]
+	preview.scale = Vector2.ONE * (4.5 if with_dog else 6.0)
+	preview.position = Vector2(165 if with_dog else 210, 330)
+	for id in aid_buttons:
+		var on: bool = id in look["aids"]
+		var button: Button = aid_buttons[id]
+		button.set_pressed_no_signal(on)
+		var style := _box(Color("#0369a1") if on else Color("#1e293b"), Color.WHITE if on else Color("#334155"), 3 if on else 2, 10)
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
+			button.add_theme_stylebox_override(state, style)
+		button.add_theme_color_override("font_color", Color.WHITE if on else Color("#cbd5e1"))
+		button.add_theme_color_override("font_pressed_color", Color.WHITE)
 	name_tag.text = look["name"] if look["name"] != "" else tr("Your hero")
 	wallet_label.text = "</>  %d" % save.icons
 	boy_button.set_pressed_no_signal(look["style"] == "boy")

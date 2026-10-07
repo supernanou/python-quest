@@ -8,7 +8,7 @@ const HeroSprite = preload("res://scripts/hero_sprite.gd")
 var path := ""
 var created := 0.0
 var has_hero := false
-var look: Dictionary = HeroSprite.DEFAULT_LOOK.duplicate()
+var look: Dictionary = HeroSprite.DEFAULT_LOOK.duplicate(true)
 var icons := 0
 var owned_items: Array = ["none"]
 var collected: Array = []  # ids of code icons already picked up, e.g. "3:5,7"
@@ -35,6 +35,15 @@ func load_file() -> void:
 	quiz_attempts = config.get_value("progress", "quiz_attempts", quiz_attempts)
 	stats = config.get_value("progress", "stats", stats)
 	lab_done = config.get_value("progress", "lab_done", lab_done)
+	# Glasses used to be a paid extra - now they are free in "About me",
+	# and the paid extra is sunglasses.
+	if look.get("item") == "glasses":
+		look["item"] = "none"
+		if not "glasses" in look["aids"]:
+			look["aids"].append("glasses")
+	if "glasses" in owned_items:
+		owned_items.erase("glasses")
+		owned_items.append("sunglasses")
 
 
 func save_file() -> void:

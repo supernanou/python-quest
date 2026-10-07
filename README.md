@@ -12,7 +12,8 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 - **A quiz at the end of every level:** 5 questions, mixing click-an-answer and typed answers. Kids need 4 out of 5 to pass, and missed answers are explained before they try again.
 - **Code Lab:** kids write whole programs, press **Run** and see the output, with `input()` and friendly error messages. It includes 10 challenges that the game checks automatically.
 - **Python Notebook:** every lesson a child solves is saved as a note card they can look back at.
-- **Hero creator:** boy or girl, skin, hair and outfit colours, a name, and extras such as a cap, glasses, headphones, a crown or a wizard hat.
+- **Hero creator:** boy or girl, skin, hair and outfit colours, a name, and extras such as a cap, sunglasses, headphones, a crown or a wizard hat.
+- **Every child can make a hero like them:** the free **About me** tab offers a wheelchair, crutches, leg braces, a prosthetic leg or arm, glasses, an eye patch, hearing aids, a cochlear implant, ear defenders, an insulin pump and a service dog.
 - **`</>` code icons** to collect on the maps, spent on hints and hero extras.
 - **Several players** on one computer, each with their own hero and progress.
 - **A progress report for parents and teachers** showing which topics needed extra help.
@@ -31,8 +32,10 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 | **Exercise:** a short lesson, code to read, and a question | **Quiz** at the end of every level |
 | ![Code Lab](docs/screenshots/08-code-lab.png) | ![Notebook](docs/screenshots/09-notebook.png) |
 | **Code Lab:** write and run real programs | **Notebook:** everything learned so far |
-| ![Create your hero](docs/screenshots/03-hero.png) | ![Greek](docs/screenshots/11-greek.png) |
-| **Create your hero** | **Ελληνικά:** the whole game in Greek |
+| ![Create your hero](docs/screenshots/03-hero.png) | ![About me](docs/screenshots/12-about-me.png) |
+| **Create your hero** | **About me:** a hero just like you |
+| ![Greek](docs/screenshots/11-greek.png) | |
+| **Ελληνικά:** the whole game in Greek | |
 | ![Players](docs/screenshots/02-players.png) | ![Report](docs/screenshots/10-report.png) |
 | **Who's playing?** Several kids on one computer | **Progress report** for grown-ups |
 
@@ -83,6 +86,19 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 The Python code itself stays in English in both languages, because Python is written in English everywhere. Everything around the code is translated.
 
 ## For parents and teachers
+
+- **Inclusive heroes:** in **Create your hero → About me**, children can give their hero what they use in real life. There are 12 options, any combination works, and they're always free rather than unlocked with icons.
+
+  | Group | Options |
+  |---|---|
+  | Moving | wheelchair, crutches, leg braces, prosthetic leg, prosthetic arm |
+  | Seeing | glasses, eye patch |
+  | Hearing | hearing aids, cochlear implant |
+  | Sensory | ear defenders |
+  | Medical | insulin pump |
+  | Helper | service dog |
+
+  To add or change options, see the `AIDS` list in [`scripts/hero_sprite.gd`](scripts/hero_sprite.gd).
 
 - **Read aloud:** the **Read aloud** button reads the lesson and question for younger readers. It uses the computer's own voices; on a Mac these are *Samantha* for English and *Melina* for Greek. If a voice isn't installed, the button is hidden.
 - **Break reminder:** after **30 minutes** the game pauses and suggests a **5-minute break**. Kids can take the break, which shows a countdown with tips such as stretching or drinking water, or keep playing and get reminded again in 15 minutes. To change the times, edit the three numbers at the top of [`scripts/break_reminder.gd`](scripts/break_reminder.gd).
