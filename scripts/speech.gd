@@ -4,6 +4,10 @@ extends RefCounted
 
 const Lang = preload("res://scripts/lang.gd")
 
+## Read-aloud is switched OFF for now: every "Read aloud" button is hidden.
+## Change this to true to bring it back.
+const READ_ALOUD_ON := false
+
 ## Nice, clear voices to prefer (macOS names). Funny novelty voices are skipped.
 const PREFERRED := {
 	"en": ["Samantha", "Karen", "Daniel", "Moira", "Tessa", "Serena", "Alex"],
@@ -19,10 +23,12 @@ static func enabled() -> bool:
 
 ## True when there is a voice for the current language.
 static func available() -> bool:
-	return enabled() and _voice() != ""
+	return READ_ALOUD_ON and enabled() and _voice() != ""
 
 
 static func say(text: String) -> void:
+	if not READ_ALOUD_ON:
+		return
 	var voice := _voice()
 	if voice == "":
 		return

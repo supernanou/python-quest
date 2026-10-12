@@ -18,7 +18,7 @@ Made with [Godot 4](https://godotengine.org). Made by **@vaslabs**.
 - **Several players** on one computer, each with their own hero and progress.
 - **A progress report for parents and teachers** showing which topics needed extra help.
 - **English / Ελληνικά,** switchable at any time.
-- **Read aloud:** lessons, questions, quizzes and help can be read out loud in English or Greek, using the computer's built-in voices.
+- **Read aloud (switched off for now):** lessons, questions, quizzes and help can be read out loud in English or Greek, using the computer's built-in voices.
 - **Break reminder:** after 30 minutes the game suggests a 5-minute break with stretching tips.
 - **Everything is drawn in code,** so there are no image files.
 
@@ -100,7 +100,7 @@ The code itself stays in English in both languages, because programming language
 
   To add or change options, see the `AIDS` list in [`scripts/hero_sprite.gd`](scripts/hero_sprite.gd).
 
-- **Read aloud:** the **Read aloud** button reads the lesson and question for younger readers. It uses the computer's own voices; on a Mac these are *Samantha* for English and *Melina* for Greek. If a voice isn't installed, the button is hidden.
+- **Read aloud (switched off for now):** to turn it on, set `READ_ALOUD_ON` to `true` at the top of [`scripts/speech.gd`](scripts/speech.gd). A **Read aloud** button then reads the lesson and question for younger readers. It uses the computer's own voices; on a Mac these are *Samantha* for English and *Melina* for Greek. If a voice isn't installed, the button is hidden.
 - **Break reminder:** after **30 minutes** the game pauses and suggests a **5-minute break**. Kids can take the break, which shows a countdown with tips such as stretching or drinking water, or keep playing and get reminded again in 15 minutes. To change the times, edit the three numbers at the top of [`scripts/break_reminder.gd`](scripts/break_reminder.gd).
 
 - **Progress report:** **Grown-ups** on the level map shows, for each level:
