@@ -5,15 +5,16 @@ extends Control
 signal chosen(save)
 signal new_player
 signal back
+signal remove_requested(save)
 
 const HeroSprite = preload("res://scripts/hero_sprite.gd")
 const Profiles = preload("res://scripts/profiles.gd")
+const Courses = preload("res://scripts/courses.gd")
 const BackButton = preload("res://scripts/back_button.gd")
 
 var players: Array = []
 var grid: GridContainer
 var heroes: Array = []
-var remove_armed := ""  # path of the player whose Remove button was clicked once
 var t := 0.0
 
 
@@ -49,7 +50,6 @@ func _ready() -> void:
 
 func open() -> void:
 	players = Profiles.all()
-	remove_armed = ""
 	_rebuild()
 	visible = true
 
@@ -89,30 +89,30 @@ func _player_card(save) -> VBoxContainer:
 	name_label.position = Vector2(0, 128)
 	card.add_child(name_label)
 	var done := 0
-	for i in 10:
+	var total_levels := 0
+	for c in Courses.COURSES.size():
+		total_levels += Courses.COURSES[c]["files"].size()
+	for i in total_levels:
 		done += save.solved_in_level(i)
-	var progress := _label(tr("Level %d  -  %d exercises") % [mini(save.unlocked, 10), done], 14, Color("#94a3b8"))
+	# Where they are now, e.g. "Beginner 4" or "Intermediate 2"
+	var newest := clampi(save.unlocked - 1, 0, total_levels - 1)
+	var course_index := 0
+	for c in Courses.COURSES.size():
+		if newest >= Courses.course_range(c)[0]:
+			course_index = c
+	var number: int = newest - Courses.course_range(course_index)[0] + 1
+	var progress := _label(tr("%s %d  -  %d exercises") % [tr(Courses.COURSES[course_index]["short"]), number, done], 14, Color("#94a3b8"))
 	progress.position = Vector2(0, 156)
 	card.add_child(progress)
 
 	var remove := Button.new()
-	remove.text = "Sure? Click again" if remove_armed == save.path else "Remove"
+	remove.text = "Remove"
 	remove.flat = true
 	remove.add_theme_font_size_override("font_size", 13)
-	remove.add_theme_color_override("font_color", Color("#f87171") if remove_armed == save.path else Color("#64748b"))
-	remove.pressed.connect(_on_remove.bind(save))
+	remove.add_theme_color_override("font_color", Color("#64748b"))
+	remove.pressed.connect(func() -> void: remove_requested.emit(save))
 	holder.add_child(remove)
 	return holder
-
-
-func _on_remove(save) -> void:
-	if remove_armed == save.path:
-		Profiles.remove(save)
-		players.erase(save)
-		remove_armed = ""
-	else:
-		remove_armed = save.path
-	_rebuild()
 
 
 func _card_button(bg: Color, border: Color) -> Button:

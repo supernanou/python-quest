@@ -2,8 +2,8 @@ extends RefCounted
 ## Helpers for checking answers and colouring code.
 ## Used by the exercise window and the quiz.
 
-const KEYWORDS := ["def", "return", "if", "elif", "else", "for", "in", "while", "and", "or", "not", "True", "False", "None"]
-const BUILTINS := ["print", "range", "len", "input", "int", "str", "append", "upper", "lower"]
+const KEYWORDS := ["def", "return", "if", "elif", "else", "for", "in", "while", "and", "or", "not", "True", "False", "None", "break", "continue", "try", "except", "import"]
+const BUILTINS := ["print", "range", "len", "input", "int", "str", "append", "upper", "lower", "round", "sum", "max", "min", "sorted", "enumerate", "split", "join", "replace", "get", "items"]
 
 static var _token_re: RegEx
 static var _spaces_re: RegEx

@@ -2,7 +2,8 @@ extends Node2D
 ## Code Quest - runs the screens and builds each level from its map.
 ##
 ## Title -> Who's playing? -> Create your hero (new players) -> Level map -> Level -> Quiz -> next level
-## From the level map: Notebook, Code Lab and the grown-ups' progress report.
+## Two courses (Beginner, Intermediate) of 10 levels each, in one list of levels.
+## From the level map: Notebook, Code Lab and the grown-ups area (behind a PIN).
 
 const TILE := 48
 const HUD_HEIGHT := 64
@@ -26,7 +27,8 @@ const LevelSelect = preload("res://scripts/level_select.gd")
 const Profiles = preload("res://scripts/profiles.gd")
 const ProfileSelect = preload("res://scripts/profile_select.gd")
 const Notebook = preload("res://scripts/notebook.gd")
-const Report = preload("res://scripts/report.gd")
+const Grownups = preload("res://scripts/grownups.gd")
+const ParentGate = preload("res://scripts/parent_gate.gd")
 const CodeLab = preload("res://scripts/code_lab.gd")
 const BackButton = preload("res://scripts/back_button.gd")
 const BreakReminder = preload("res://scripts/break_reminder.gd")
@@ -58,7 +60,8 @@ var title_screen: Control
 var level_select: Control
 var profile_select: Control
 var notebook: Control
-var report: Control
+var grownups: Control
+var gate: Control
 var code_lab: Control
 var break_reminder: Control
 
@@ -67,7 +70,7 @@ func _ready() -> void:
 	# Fill the screen; the game art stretches to fit any window size.
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 	Lang.setup()
-	levels = Courses.beginner()
+	levels = Courses.all()
 	_setup_inputs()
 	_build_ui()
 	var players := Profiles.all()
@@ -142,10 +145,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # ---------------------------------------------------------------- screens
 
-## Esc = back, on every screen. Windows (exercise, quiz, notebook, report, Code Lab)
+## Esc = back, on every screen. Windows (exercise, quiz, notebook, grown-ups, Code Lab)
 ## close themselves first, so this only runs when nothing else used Esc.
 func _go_back() -> bool:
-	if code_lab.visible or report.visible or notebook.visible or quiz.visible or panel.visible:
+	if code_lab.visible or grownups.visible or gate.visible or notebook.visible or quiz.visible or panel.visible:
 		return false
 	match state:
 		"players":
@@ -160,6 +163,22 @@ func _go_back() -> bool:
 		_:
 			return false
 	return true
+
+
+## "Remove" on Who's playing? - a grown-up must type the PIN. The player goes to
+## "Removed players" in the grown-ups area and can be brought back.
+func _on_remove_requested(player_save: SaveData) -> void:
+	var name: String = player_save.look.get("name", "")
+	gate.ask(tr("Remove %s? You can bring them back later in the grown-ups area.") % (name if name != "" else tr("Player")), func() -> void:
+		Profiles.remove(player_save)
+		profile_select.open())
+
+
+## A backup was restored or a removed player came back: re-read the current player.
+func _on_players_changed() -> void:
+	if save != null and FileAccess.file_exists(save.path):
+		save.load_file()
+		panel.hero_name = _hero_name()
 
 
 func _show_title() -> void:
@@ -353,9 +372,10 @@ func _load_level(index: int) -> void:
 	player.position = start
 	level_root.add_child(player)
 
-	level_label.text = tr("Level %d/%d: %s") % [index + 1, levels.size(), Lang.pick(data, "name")]
+	var course: Dictionary = Courses.COURSES[data["course"]]
+	level_label.text = tr("%s %d/%d: %s") % [tr(course["short"]), data["number"], course["files"].size(), Lang.pick(data, "name")]
 	_update_hud()
-	_show_banner((tr("Level %d") + "\n%s") % [index + 1, Lang.pick(data, "name")])
+	_show_banner((tr("Level %d") + "\n%s") % [data["number"], Lang.pick(data, "name")])
 
 
 func _update_hud() -> void:
@@ -429,7 +449,8 @@ func _start_quiz() -> void:
 	state = "quiz"
 	player.frozen = true
 	prompt_label.visible = false
-	quiz.start(level_index + 1, levels[level_index]["quiz"], level_index + 1 >= levels.size())
+	var course_end: int = Courses.course_range(levels[level_index]["course"])[1]
+	quiz.start(levels[level_index]["number"], levels[level_index]["quiz"], level_index == course_end)
 
 
 func _on_quiz_finished(_score: int) -> void:
@@ -459,12 +480,17 @@ func _on_quiz_cancelled() -> void:
 
 func _on_quiz_next_level() -> void:
 	quiz.visible = false
-	if level_index + 1 < levels.size():
+	var course_index: int = levels[level_index]["course"]
+	if level_index < Courses.course_range(course_index)[1]:
 		_load_level(level_index + 1)
+		return
+	# Last level of a course: celebrate!
+	_clear_level()
+	state = "won"
+	if course_index == 0:
+		_show_overlay(tr("YOU DID IT, %s!\n\nYou finished the Beginner course:\n100 exercises and 10 quizzes!\nYou are now a Code Hero!\n\nThe Intermediate course is now unlocked.\n\nPress ENTER to go to the level map") % _hero_name().to_upper())
 	else:
-		_clear_level()
-		state = "won"
-		_show_overlay(tr("YOU DID IT, %s!\n\nYou finished the Beginner course:\n100 exercises and 10 quizzes!\nYou are now a Code Hero!\n\n</> icons: %d\n\nPress ENTER to go to the level map") % [_hero_name().to_upper(), save.icons])
+		_show_overlay(tr("AMAZING, %s!\n\nYou finished the Intermediate course too:\n200 exercises and 20 quizzes in total!\nYou are now a Code Master!\n\nPress ENTER to go to the level map") % _hero_name().to_upper())
 
 
 # ---------------------------------------------------------------- UI
@@ -567,13 +593,15 @@ func _build_ui() -> void:
 	level_select.back.connect(_show_players)
 	level_select.open_notebook.connect(_open_notebook)
 	level_select.open_lab.connect(func() -> void: code_lab.open(save))
-	level_select.open_report.connect(func() -> void: report.open(levels, save))
+	level_select.open_report.connect(func() -> void:
+		gate.ask(tr("Open the grown-ups area?"), func() -> void: grownups.open(levels, save)))
 	overlay_layer.add_child(level_select)
 
 	profile_select = ProfileSelect.new()
 	profile_select.chosen.connect(_on_player_chosen)
 	profile_select.new_player.connect(_on_new_player)
 	profile_select.back.connect(_show_title)
+	profile_select.remove_requested.connect(_on_remove_requested)
 	overlay_layer.add_child(profile_select)
 
 	var top_layer := CanvasLayer.new()
@@ -582,8 +610,18 @@ func _build_ui() -> void:
 	code_lab = CodeLab.new()
 	code_lab.closed.connect(func() -> void: level_select.open(levels, save))
 	top_layer.add_child(code_lab)
-	report = Report.new()
-	top_layer.add_child(report)
+	grownups = Grownups.new()
+	grownups.closed.connect(func() -> void: level_select.open(levels, save))
+	grownups.players_changed.connect(_on_players_changed)
+	grownups.break_settings_changed.connect(func() -> void: break_reminder.reschedule())
+	grownups.change_pin_requested.connect(func() -> void: gate.ask_new_pin(grownups.show_pin_changed))
+	top_layer.add_child(grownups)
+
+	var gate_layer := CanvasLayer.new()
+	gate_layer.layer = 15
+	add_child(gate_layer)
+	gate = ParentGate.new()
+	gate_layer.add_child(gate)
 	notebook = Notebook.new()
 	notebook.closed.connect(_on_notebook_closed)
 	top_layer.add_child(notebook)

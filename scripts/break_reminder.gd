@@ -1,13 +1,13 @@
 extends Control
-## "Time for a break!" After 30 minutes of play the game pauses and suggests a
-## 5-minute break with stretching tips. Change the minutes below if you like.
+## "Time for a break!" After a while (30 minutes unless a grown-up changes it) the
+## game pauses and suggests a short break with stretching tips.
+## Grown-ups can turn it off or change the times in the grown-ups area.
 
 const HeroSprite = preload("res://scripts/hero_sprite.gd")
 const Speech = preload("res://scripts/speech.gd")
+const Settings = preload("res://scripts/settings.gd")
 
-const PLAY_MINUTES := 30.0  # play time before the first reminder
 const SNOOZE_MINUTES := 15.0  # "Keep playing for now" asks again after this long
-const BREAK_MINUTES := 5.0  # length of the break countdown
 
 const TIPS := [
 	"Stand up and stretch your arms up high!",
@@ -19,7 +19,11 @@ const TIPS := [
 ]
 
 var play_seconds := 0.0  # how long this session has been played
-var next_reminder := PLAY_MINUTES * 60.0
+var next_reminder := 30.0 * 60.0
+var reminders_on := true
+var play_minutes := 30.0
+var break_minutes := 5.0
+var break_button: Button
 var break_left := 0.0
 var on_break := false
 var tip_index := 0
@@ -68,7 +72,8 @@ func _ready() -> void:
 	ask_buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	ask_buttons.add_theme_constant_override("separation", 14)
 	ask_view.add_child(ask_buttons)
-	ask_buttons.add_child(_button("Take a 5-minute break", Color("#16a34a"), _start_break))
+	break_button = _button("", Color("#16a34a"), _start_break)
+	ask_buttons.add_child(break_button)
 	ask_buttons.add_child(_button("Keep playing for now", Color("#334155"), _keep_playing))
 
 	# --- Break countdown
@@ -89,11 +94,20 @@ func _ready() -> void:
 	back_button = _button("I'm back!", Color("#16a34a"), _end_break)
 	back_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	break_view.add_child(back_button)
+	reschedule()
+
+
+## Reads the grown-up settings again and starts counting towards the next reminder.
+func reschedule() -> void:
+	reminders_on = Settings.break_on()
+	play_minutes = Settings.break_play_minutes()
+	break_minutes = Settings.break_length_minutes()
+	next_reminder = play_seconds + play_minutes * 60.0
 
 
 ## Called by the game every frame while someone is playing.
 func count_play_time(delta: float, look: Dictionary) -> void:
-	if visible:
+	if visible or not reminders_on:
 		return
 	play_seconds += delta
 	if play_seconds >= next_reminder:
@@ -107,6 +121,7 @@ func _ask(look: Dictionary) -> void:
 	visible = true
 	ask_view.visible = true
 	break_view.visible = false
+	break_button.text = tr("Take a %d-minute break") % int(break_minutes)
 	ask_text.text = tr("You've been coding for %d minutes - great work! Give your eyes and your body a little rest.") % roundi(play_seconds / 60.0)
 
 
@@ -117,7 +132,7 @@ func _keep_playing() -> void:
 
 func _start_break() -> void:
 	on_break = true
-	break_left = BREAK_MINUTES * 60.0
+	break_left = break_minutes * 60.0
 	tip_index = randi() % TIPS.size()
 	tip_time = 0.0
 	ask_view.visible = false
@@ -128,7 +143,7 @@ func _start_break() -> void:
 
 func _end_break() -> void:
 	on_break = false
-	next_reminder = play_seconds + PLAY_MINUTES * 60.0
+	next_reminder = play_seconds + play_minutes * 60.0
 	_resume()
 
 

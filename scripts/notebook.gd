@@ -6,11 +6,14 @@ signal closed
 
 const CodeText = preload("res://scripts/code_text.gd")
 const Lang = preload("res://scripts/lang.gd")
+const Courses = preload("res://scripts/courses.gd")
 
 var levels: Array = []
 var save
 var mono: SystemFont
 var level_buttons: Array = []
+var course_tabs: Array = []
+var course := 0
 var page_title: Label
 var cards_box: VBoxContainer
 var scroll: ScrollContainer
@@ -37,17 +40,31 @@ func _ready() -> void:
 	title.position = Vector2(44, 34)
 	add_child(title)
 
+	# Course tabs, then one button per level of that course
+	var tabs := HBoxContainer.new()
+	tabs.position = Vector2(44, 78)
+	tabs.add_theme_constant_override("separation", 6)
+	add_child(tabs)
+	for c in Courses.COURSES.size():
+		var tab := Button.new()
+		tab.text = Courses.COURSES[c]["short"]
+		tab.custom_minimum_size = Vector2(112, 34)
+		tab.add_theme_font_size_override("font_size", 14)
+		tab.pressed.connect(func() -> void: _show_course(c, -1))
+		tabs.add_child(tab)
+		course_tabs.append(tab)
+
 	var levels_box := VBoxContainer.new()
-	levels_box.position = Vector2(44, 84)
-	levels_box.size = Vector2(230, 520)
-	levels_box.add_theme_constant_override("separation", 6)
+	levels_box.position = Vector2(44, 120)
+	levels_box.size = Vector2(230, 480)
+	levels_box.add_theme_constant_override("separation", 5)
 	add_child(levels_box)
 	for i in 10:
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(230, 44)
+		button.custom_minimum_size = Vector2(230, 41)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.add_theme_font_size_override("font_size", 16)
-		button.pressed.connect(_show_page.bind(i))
+		button.add_theme_font_size_override("font_size", 15)
+		button.pressed.connect(func() -> void: _show_page(Courses.course_range(course)[0] + i))
 		levels_box.add_child(button)
 		level_buttons.append(button)
 
@@ -78,11 +95,32 @@ func _ready() -> void:
 func open(p_levels: Array, p_save, level_index := -1) -> void:
 	levels = p_levels
 	save = p_save
+	# Start on the level being played, or the newest level with notes
+	var start := level_index
+	if start < 0 or save.solved_in_level(start) == 0:
+		start = -1
+		for i in levels.size():
+			if save.solved_in_level(i) > 0:
+				start = i
+	var start_course: int = levels[maxi(start, 0)]["course"]
+	_show_course(start_course, start)
+	visible = true
+
+
+func _show_course(c: int, level_index: int) -> void:
+	course = c
+	var span := Courses.course_range(course)
+	for t in course_tabs.size():
+		var on: bool = t == course
+		var tab: Button = course_tabs[t]
+		tab.add_theme_stylebox_override("normal", _box(Color("#fbbf24") if on else Color("#fef3c7"), Color("#a16207"), 2, 8, 6))
+		tab.add_theme_color_override("font_color", Color("#713f12"))
 	var page := -1
-	for i in level_buttons.size():
-		var button: Button = level_buttons[i]
+	for n in level_buttons.size():
+		var i: int = span[0] + n
+		var button: Button = level_buttons[n]
 		var has_notes: bool = i < levels.size() and save.solved_in_level(i) > 0
-		button.text = "%d. %s" % [i + 1, Lang.pick(levels[i], "name")] if i < levels.size() else ""
+		button.text = "%d. %s" % [n + 1, Lang.pick(levels[i], "name")] if i < levels.size() else ""
 		button.disabled = not has_notes
 		button.visible = i < levels.size()
 		var bg := Color("#fde68a") if has_notes else Color("#f5f5f4")
@@ -96,16 +134,15 @@ func open(p_levels: Array, p_save, level_index := -1) -> void:
 		button.add_theme_color_override("font_disabled_color", Color("#a8a29e"))
 		if has_notes:
 			page = i
-	if level_index >= 0 and save.solved_in_level(level_index) > 0:
+	if level_index >= span[0] and level_index <= span[1] and save.solved_in_level(level_index) > 0:
 		page = level_index
-	_show_page(maxi(page, 0))
-	visible = true
+	_show_page(page if page >= 0 else span[0])
 
 
 func _show_page(i: int) -> void:
 	for child in cards_box.get_children():
 		child.queue_free()
-	page_title.text = tr("Level %d: %s") % [i + 1, Lang.pick(levels[i], "name")]
+	page_title.text = tr("Level %d: %s") % [levels[i]["number"], Lang.pick(levels[i], "name")]
 	var count := 0
 	for exercise in levels[i]["exercises"]:
 		if save.is_solved(exercise["id"]):

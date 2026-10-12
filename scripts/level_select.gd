@@ -1,6 +1,6 @@
 extends Control
-## The level map: pick a level. Finished levels show their quiz score,
-## locked levels open after passing the quiz before them.
+## The level map: pick a course (Beginner / Intermediate) and a level.
+## Finished levels show their quiz score; locked levels open after passing the quiz before them.
 
 signal level_chosen(index: int)
 signal change_hero
@@ -14,6 +14,7 @@ const HeroSprite = preload("res://scripts/hero_sprite.gd")
 const LangToggle = preload("res://scripts/lang_toggle.gd")
 const BackButton = preload("res://scripts/back_button.gd")
 const Lang = preload("res://scripts/lang.gd")
+const Courses = preload("res://scripts/courses.gd")
 
 var tiles: Array = []
 var hero: HeroSprite
@@ -24,6 +25,9 @@ var t := 0.0
 var next_tile: Button
 var last_levels: Array = []
 var last_save
+var course := 0
+var title_label: Label
+var course_tabs: Array = []
 
 
 func _ready() -> void:
@@ -35,17 +39,26 @@ func _ready() -> void:
 	bg.size = size
 	add_child(bg)
 
-	var title := _label("Beginner Course", 34, Color("#facc15"))
-	title.position = Vector2(0, 26)
-	title.size = Vector2(size.x, 46)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	add_child(title)
+	title_label = _label("", 34, Color("#facc15"))
+	title_label.position = Vector2(0, 20)
+	title_label.size = Vector2(size.x, 46)
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(title_label)
 
-	var subtitle := _label("10 levels  -  10 exercises each  -  a quiz at the end of every level", 17, Color("#94a3b8"))
-	subtitle.position = Vector2(0, 76)
-	subtitle.size = Vector2(size.x, 26)
-	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	add_child(subtitle)
+	# Course tabs: Beginner | Intermediate
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation", 10)
+	tabs.position = Vector2(size.x / 2 - 175, 72)
+	add_child(tabs)
+	for c in Courses.COURSES.size():
+		var tab := Button.new()
+		tab.text = Courses.COURSES[c]["short"]
+		tab.custom_minimum_size = Vector2(170, 40)
+		tab.add_theme_font_size_override("font_size", 17)
+		tab.focus_mode = Control.FOCUS_NONE
+		tab.pressed.connect(func() -> void: open(last_levels, last_save, c))
+		tabs.add_child(tab)
+		course_tabs.append(tab)
 
 	hero = HeroSprite.new()
 	hero.position = Vector2(170, 60)
@@ -69,14 +82,14 @@ func _ready() -> void:
 
 	var languages := LangToggle.new()
 	languages.position = Vector2(size.x - 238, 12)
-	languages.changed.connect(func() -> void: open(last_levels, last_save))
+	languages.changed.connect(func() -> void: open(last_levels, last_save, course))
 	add_child(languages)
 
 	tiles_box = GridContainer.new()
 	tiles_box.columns = 5
 	tiles_box.add_theme_constant_override("h_separation", 14)
 	tiles_box.add_theme_constant_override("v_separation", 14)
-	tiles_box.position = Vector2(53, 130)
+	tiles_box.position = Vector2(53, 128)
 	add_child(tiles_box)
 
 	var buttons := HBoxContainer.new()
@@ -109,9 +122,20 @@ func _ready() -> void:
 	add_child(help)
 
 
-func open(levels: Array, save) -> void:
+## course: which tab to show. -1 = the course of the newest unlocked level.
+func open(levels: Array, save, show_course := -1) -> void:
 	last_levels = levels
 	last_save = save
+	if show_course == -1:
+		show_course = levels[clampi(save.unlocked - 1, 0, levels.size() - 1)]["course"]
+	course = show_course
+	title_label.text = tr(Courses.COURSES[course]["name"])
+	for c in course_tabs.size():
+		var on: bool = c == course
+		var tab: Button = course_tabs[c]
+		tab.add_theme_stylebox_override("normal", _box(Color("#0369a1") if on else Color("#1e293b"), Color.WHITE if on else Color("#334155"), 2, 10))
+		tab.add_theme_stylebox_override("hover", _box(Color("#0284c7") if on else Color("#273449"), Color.WHITE, 2, 10))
+		tab.add_theme_color_override("font_color", Color.WHITE if on else Color("#94a3b8"))
 	hero.look = save.look
 	hero.queue_redraw()
 	hero_name_label.text = save.look.get("name", "")
@@ -120,7 +144,8 @@ func open(levels: Array, save) -> void:
 		child.queue_free()
 	tiles.clear()
 	next_tile = null
-	for i in levels.size():
+	var span := Courses.course_range(course)
+	for i in range(span[0], mini(span[1], levels.size() - 1) + 1):
 		var tile := _make_tile(i, levels[i], save)
 		tiles_box.add_child(tile)
 		tiles.append(tile)
@@ -143,6 +168,8 @@ func _make_tile(i: int, level: Dictionary, save) -> Button:
 		bg = Color("#1e293b")
 		border = Color("#334155")
 		status = tr("Locked")
+		if i == Courses.course_range(level["course"])[0] and level["course"] > 0:
+			status = tr("Finish the %s first") % tr(Courses.COURSES[level["course"] - 1]["short"])
 		tile.disabled = true
 	elif done:
 		bg = Color("#14532d")
@@ -153,7 +180,7 @@ func _make_tile(i: int, level: Dictionary, save) -> Button:
 		next_tile = tile
 	if not locked and not done and save.solved_in_level(i) > 0:
 		status = tr("%d/10 done") % save.solved_in_level(i)
-	tile.text = (tr("Level %d") + "\n\n%s\n\n%s") % [i + 1, Lang.pick(level, "name"), status]
+	tile.text = (tr("Level %d") + "\n\n%s\n\n%s") % [level["number"], Lang.pick(level, "name"), status]
 	tile.add_theme_stylebox_override("normal", _box(bg, border, 3, 14))
 	tile.add_theme_stylebox_override("hover", _box(bg.lightened(0.12), Color.WHITE, 3, 14))
 	tile.add_theme_stylebox_override("pressed", _box(bg.darkened(0.15), Color.WHITE, 3, 14))
